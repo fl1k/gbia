@@ -30,7 +30,8 @@ Action.odrediAkciju = function (akcije, svet) {
     Action.predveAkcije = Action.proslaAkcija;
     Action.proslaAkcija = maxakcija;
     //Transformacija zeljene akcije, izvrsava?
-    return zeljenaAkcija.komanda(svet);
+    //return zeljenaAkcija.komanda(svet);
+
     //MOZDA TREBA SAMO DA SE RETURNUJE MAXAKCIJA
 }
 Action.akcije = {
@@ -92,7 +93,7 @@ Action.akcije = {
                 return 0.1;
             },
             imamoVodu: function (svet) {//0 ako nemamo, mozda 0.6 ako imamo da kao zelimo da istrosimo to sto imamo
-
+                return 0.1;
             }
         },
         komanda: function (svet) {
@@ -114,12 +115,12 @@ Action.akcije = {
     },
     fertilizer: {//profitabilno, imamo fertilizer
         parametri: {
-            profitabilnost: function (svet) { //Koliko cemo potencijalno da imamo posle harvesta
+            profitabilnost: function (svet) { //0 alp nemamo, Koliko cemo potencijalno da imamo posle harvesta, 0.95 ako je bas profitabilno
                 return 0.1;
             },
-            imamofertilizer: function (svet) {//0 ako nemamo
+            /*imamofertilizer: function (svet) {//0 ako nemamo, 0,6 ako imamo da kao zelimo da ga koristimo
 
-            }
+            }*/
         },
         komanda: function (svet) {
 
@@ -127,7 +128,12 @@ Action.akcije = {
     },
     buyLand: {
         parametri: {//zuta blizu, ima kesa(ne radi ovo ako nema), profitabilno (ima ostatak za kasniju ekspanziju, mozda ako se isplati za 4 poteza, ili 8 ako je puno para)
+            blizinaZutih: function (svet) {
 
+            },
+            profitabilnost: function (svet) {//0 ako nemamo para
+
+            }
         },
         komanda: function (svet) {
 
@@ -135,6 +141,9 @@ Action.akcije = {
     },
     mole: {//Zivotni vek naseg, da stignemo da zalijemo, stanje protivnikovih para u odnosu na nase, mozda je preop i treba sto pre, mozda nekad umesto kupovine
         parametri: {
+            zivotniVekCveca: function (svet) {//0 ako nemamo krticu, malo ako umiru
+
+            }
 
         },
         komanda: function (svet) {

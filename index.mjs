@@ -1,6 +1,6 @@
 import { settings } from './settings.mjs';
-import { Action, InputAction, actionType } from './actions.mjs';
 import net from 'net';
+import { Action } from './Utility algoritam.mjs';
 
 import { World } from './world.mjs';
 let world = {};
@@ -75,7 +75,5 @@ clientSocket.startConnection();
 /// Ovde treba da se desi potez.
 ///
 function onTick() {
-  const inputAction = new InputAction();
-
-  return inputAction.toString();
+  return Action.odrediAkciju(Action.akcije, world);
 }
