@@ -41,7 +41,7 @@ class World {
         this.enemy.update(jsonObj.enemy, tileOwner.enemy);
     }
     // speed
-    getNeighboringTiles(tile) {
+    getTilesNearby(tile) {
         const tiles = [];
         let pos1 = { x: tile.x - 1, y: tile.y };
         let pos2 = { x: tile.x - 1, y: tile.y + 1 };

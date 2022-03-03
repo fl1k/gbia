@@ -45,6 +45,19 @@ class Player
     for(let i = 0; i < jsonObj.cards.length; i++)
       this.cards.push(new Card(jsonObj.cards[i]));
   }
+
+  getAllCloseTiles()
+  {
+    const closeTiles = [];
+    for(let i = 0; i < this.tiles.length; i++)
+    {
+      const nearbyTiles = this.world.getTilesNearby(this.tiles[i]);
+      for(let j = 0; j < closeTiles.length; j++)
+        if(!closeTiles.includes(nearbyTiles[j]))
+          closeTiles.push(nearbyTiles[j]);
+    }
+    return closeTiles;
+  }
 }
 
 export {Player};
