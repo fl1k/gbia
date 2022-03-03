@@ -28,22 +28,22 @@ Akcija.odrediAkciju = function (akcije, svet) {
             maxbitnost = akcije[maxakcija];
         }
     }
-    let zeljenaAkcija = maxakcija;
+    let zeljenaAkcija = akcije[maxakcija];
     Akcija.predveAkcije = Akcija.proslaAkcija;
     Akcija.proslaAkcija = maxakcija;
     //Transformacija zeljene akcije, izvrsava?
-    //return zeljenaAkcija.komanda(svet);
-    return new InputAction(actionType.buyCards, [new Action(0, 0, 0, 1)]);
+    return zeljenaAkcija.komanda(svet);
+    //return new InputAction(actionType.buyCards, [new Action(0, 0, 0, 1)]);
     //MOZDA TREBA SAMO DA SE RETURNUJE MAXAKCIJA
 }
 Akcija.akcije = {
     cards: {
         parametri: {
             manjakResursa: function (svet) { //Manjak resursa u odnosu na kes
-                return 0.1;
+                return 1;
             },
             zeljaZaKrticom: function (svet) {//Mozda je dovoljan prvi utility, mozda ovo previse daje prednost krtici
-                return 0.1;
+                return 1;
             }
 
         },
@@ -51,7 +51,7 @@ Akcija.akcije = {
             //vraca ono sto treba da posaljemo?
             //Odredi ono sto treba da kupimo, uz cvece kupujemo vodu (mozda manje ako mozemo da iskoristimo kisu)
             //Odredimo mini utility za stvari koje kupujemo
-            return {};
+            return new InputAction(actionType.buyCards, [new Action(0, 0, 0, 1)]);
         }
     },
     planting: {
@@ -125,31 +125,31 @@ Akcija.akcije = {
             }*/
         },
         komanda: function (svet) {
-
+            return {};
         }
     },
     buyLand: {
         parametri: {//zuta blizu, ima kesa(ne radi ovo ako nema), profitabilno (ima ostatak za kasniju ekspanziju, mozda ako se isplati za 4 poteza, ili 8 ako je puno para)
             blizinaZutih: function (svet) {
-
+                return 0.1;
             },
             profitabilnost: function (svet) {//0 ako nemamo para
-
+                return 0.1;
             }
         },
         komanda: function (svet) {
-
+            return {};
         }
     },
     mole: {//Zivotni vek naseg, da stignemo da zalijemo, stanje protivnikovih para u odnosu na nase, mozda je preop i treba sto pre, mozda nekad umesto kupovine
         parametri: {
             zivotniVekCveca: function (svet) {//0 ako nemamo krticu, malo ako umiru
-
+                return 0.1;
             }
 
         },
         komanda: function (svet) {
-
+            return {};
         }
     },
 }
