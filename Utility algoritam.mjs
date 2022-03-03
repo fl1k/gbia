@@ -1,9 +1,11 @@
-export const Action = {};
+import { Action, InputAction, actionType } from "./actions.mjs";
 
-Action.proslaAkcija = null;
-Action.predveAkcije = null;
+export const Akcija = {};
 
-Action.izracunajBitnost = function (akcija, svet) {
+Akcija.proslaAkcija = null;
+Akcija.predveAkcije = null;
+
+Akcija.izracunajBitnost = function (akcija, svet) {
     let utilityji = [];
     for (let i in akcija.parametri) {
         utilityji.push(akcija.parametri[i](svet));
@@ -16,25 +18,25 @@ Action.izracunajBitnost = function (akcija, svet) {
     }
     return proizvod;
 }
-Action.odrediAkciju = function (akcije, svet) {
+Akcija.odrediAkciju = function (akcije, svet) {
     let maxbitnost = -1;
     let maxakcija = "cards";
     for (let i in akcije) {
-        let bitnost = Action.izracunajBitnost(akcije[i], svet);
+        let bitnost = Akcija.izracunajBitnost(akcije[i], svet);
         if (bitnost > maxbitnost) {
             maxakcija = i;
             maxbitnost = akcije[maxakcija];
         }
     }
     let zeljenaAkcija = maxakcija;
-    Action.predveAkcije = Action.proslaAkcija;
-    Action.proslaAkcija = maxakcija;
+    Akcija.predveAkcije = Akcija.proslaAkcija;
+    Akcija.proslaAkcija = maxakcija;
     //Transformacija zeljene akcije, izvrsava?
     //return zeljenaAkcija.komanda(svet);
-
+    return new InputAction(actionType.buyCards, [new Action(0, 0, 0, 1)]);
     //MOZDA TREBA SAMO DA SE RETURNUJE MAXAKCIJA
 }
-Action.akcije = {
+Akcija.akcije = {
     cards: {
         parametri: {
             manjakResursa: function (svet) { //Manjak resursa u odnosu na kes
