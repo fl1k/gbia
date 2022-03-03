@@ -16,4 +16,4 @@ const settings = {
     PLAYER_2_WAIT: 3000
 }
 
-module.exports = settings;
+export { settings };

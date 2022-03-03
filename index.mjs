@@ -1,0 +1,81 @@
+import { settings } from './settings.mjs';
+import { Action, InputAction, actionType } from './actions.mjs';
+import net from 'net';
+
+import { World } from './world.mjs';
+let world = {};
+
+// Vama nebitno
+class ClientSocket {
+  clientSocket = null;
+  game = 0;
+  turn = 0;
+
+  startConnection() {
+    console.log('connecting...')
+    this.turn = 0;
+    this.clientSocket = new net.Socket();
+    this.addEvents();
+  }
+
+  sendMessage(msg) {
+    if (this.turn <= settings.RESTART_TURN) {
+      this.turn++;
+      this.clientSocket.write(msg);
+    } else {
+      this.game++;
+      if (settings.PLAYER_NUM == 1) {
+        this.clientSocket.write(settings.RESTART_STRING);
+      }
+    }
+  }
+
+  setTeamName() {
+    this.sendMessage(settings.TEAM_NAME);
+  }
+
+  addEvents() {
+    this.clientSocket.on('connect', () => {
+      this.clientSocket.setEncoding("utf8");
+      console.log(`Established a TCP connection with ${settings.SERVER}:${settings.PLAYER_NUM === 1
+        ? settings.PORT_PLAYER_1 : settings.PORT_PLAYER_2}`);
+      this.setTeamName();
+    });
+    this.clientSocket.connect(settings.PLAYER_NUM === 1 ?
+      settings.PORT_PLAYER_1 : settings.PORT_PLAYER_2, settings.SERVER);
+
+    this.clientSocket.on('data', (data) => {
+      console.log(data);
+      let msg = data.slice(8);
+      const obj = JSON.parse(msg);
+      world = new World(obj);
+      msg = onTick();
+      this.sendMessage(msg);
+    });
+
+    this.clientSocket.on('close', (data) => {
+      var time_to_wait = settings.PLAYER_NUM === 1 ?
+        settings.PLAYER_1_WAIT : settings.PLAYER_2_WAIT;
+      setTimeout(() => {
+        this.startConnection();
+      }, time_to_wait);
+    });
+  }
+}
+
+
+const clientSocket = new ClientSocket();
+clientSocket.startConnection();
+(function wait() {
+  if (!clientSocket.game < settings.AMOUNT_OF_GAMES) setTimeout(wait, 1000);
+})();
+
+
+///
+/// Ovde treba da se desi potez.
+///
+function onTick() {
+  const inputAction = new InputAction();
+
+  return inputAction.toString();
+}

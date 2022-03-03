@@ -90,6 +90,9 @@ Action.akcije = {
             },
             biljkamaPotrebnaVoda: function (svet) {//Da li je potrebno zalivati, i kisa utice na ovo
                 return 0.1;
+            },
+            imamoVodu: function (svet) {//0 ako nemamo, mozda 0.6 ako imamo da kao zelimo da istrosimo to sto imamo
+
             }
         },
         komanda: function (svet) {
@@ -98,7 +101,7 @@ Action.akcije = {
     },
     harvest: {
         parametri: {
-            procenatBiljakaSpremnihZaHarvest: function (svet) {
+            procenatBiljakaSpremnihZaHarvest: function (svet) {//Ili neki odnos procenta
                 return 0.1;
             },
             spremneBiljkeKojeUskoroUmiru: function (svet) {
@@ -111,7 +114,12 @@ Action.akcije = {
     },
     fertilizer: {//profitabilno, imamo fertilizer
         parametri: {
+            profitabilnost: function (svet) { //Koliko cemo potencijalno da imamo posle harvesta
+                return 0.1;
+            },
+            imamofertilizer: function (svet) {//0 ako nemamo
 
+            }
         },
         komanda: function (svet) {
 
