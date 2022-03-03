@@ -40,11 +40,40 @@ Akcija.akcije = {
     cards: {
         parametri: {
             manjakResursa: function (svet) { //Manjak resursa u odnosu na kes
-                return 1;
+                let pare = svet.source.gold;
+                if (pare < 500) return 0;
+                let nasitajlovi = svet.source.tiles;
+                let nasiresursi = svet.source.cards;
+                let brojtajlova = nasitajlovi.length;
+                let brojSemena = 0;
+                for (let i in nasiresursi) {
+                    if ((nasiresursi[i].cardId) > 2) {
+                        brojSemena += nasiresursi[i].owned;
+                    }
+                }
+                let brojMogucegCveca = 0;
+                if (svet.daysTillRain <= 3) {
+                    brojMogucegCveca = Math.floor(pare / 500);
+                }
+                else {
+                    brojMogucegCveca = Math.floor(pare / 900);
+                }
+                let brojslobodnihtajlova = brojtajlova;
+                for (let i in nasitajlovi) {
+                    if (nasitajlovi[i].bIsPlanted) {
+                        brojslobodnihtajlova--;
+                    }
+                }
+                brojMogucegCveca = Math.min(brojMogucegCveca, brojslobodnihtajlova);
+                let util = brojMogucegCveca / (brojSemena + brojMogucegCveca + (brojtajlova - brojslobodnihtajlova));
+                return util;
             },
-            zeljaZaKrticom: function (svet) {//Mozda je dovoljan prvi utility, mozda ovo previse daje prednost krtici
-                return 1;
+            profitabilnost: function (svet) { //Koliko cemo potencijalno da imamo posle harvesta
+                return 0.1;
             }
+            /*zeljaZaKrticom: function (svet) {//Mozda je dovoljan prvi utility, mozda ovo previse daje prednost krtici
+                return 1;
+            }*/
 
         },
         komanda: function (svet) {
@@ -63,13 +92,17 @@ Akcija.akcije = {
                 return Action.proslaAkcija == "planting" ? 0.05 : (Action.predveAkcije == "planting" ? 0.1 : 0.6);
             },*/
             kolicinaSemenja: function (svet) { //Koliko imamo semena u odnosu na slobodnu zemlju
-                return 0.1;
-            },
-            odnosSlobodneZemlje: function (svet) {
-                return 0.1;
-            },
-            profitabilnost: function (svet) { //Koliko cemo potencijalno da imamo posle harvesta
-                return 0.1;
+                let nasitajlovi = svet.source.tiles;
+                let nasiresursi = svet.source.cards;
+                let brojtajlova = nasitajlovi.length;
+                let brojSemena = 0;
+                for (let i in nasiresursi) {
+                    if ((nasiresursi[i].cardId) > 2) {
+                        brojSemena += nasiresursi[i].owned;
+                    }
+                }
+                let util = Math.min(1, brojSemena / (brojtajlova));
+                return util;
             }
 
         },
@@ -78,25 +111,38 @@ Akcija.akcije = {
         }
     },
     watering: {
-        parametri: {
+        parametri: {//zivotni vek biljaka
             /*plantProsli: function (svet) {//Mozda da zamenimo sa manjkom semenja
                 return Action.proslaAkcija == "planting" ? 0.95 : (Action.predveAkcije == "planting" ? 0.55 : 0.2);
             },
             nijeWaterProsli: function (svet) {
                 return Action.proslaAkcija == "watering" ? 0.05 : (Action.predveAkcije == "watering" ? 0.1 : 0.6);
             },*/
-            manjakSemenja: function (svet) {
-                return 0.1;
-            },
-            profitabilnost: function (svet) { //Koliko cemo potencijalno da imamo posle harvesta
-                return 0.1;
-            },
+            /*manjakSemenja: function (svet) {
+                return 0.5;
+            },*///MOZDA NEKA PROFITABILNOST
             biljkamaPotrebnaVoda: function (svet) {//Da li je potrebno zalivati, i kisa utice na ovo
-                return 0.1;
+                let nasitajlovi = svet.source.tiles;
+                let brojtajlova = nasitajlovi.length;
+                let brojnezalivenogcveca = 0;
+                let brojslobodnihtajlova = brojtajlova;
+                for (let i in nasitajlovi) {
+                    if (nasitajlovi[i].bIsPlanted) {
+                        brojslobodnihtajlova--;
+                    }
+                    if (nasitajlovi[i].plantDTO.waterNeeded > 0) {
+                        if (!(svet.daysTillRain <= 1 && nasitajlovi[i].plantDTO.waterNeeded <= 2)) {
+                            brojnezalivenogcveca++;
+                        }
+                    }
+                }
+                let util = brojnezalivenogcveca / (brojtajlova - brojslobodnihtajlova);
+                //provera da li ima vode mozda?
+                return util;
             },
-            imamoVodu: function (svet) {//0 ako nemamo, mozda 0.6 ako imamo da kao zelimo da istrosimo to sto imamo
-                return 0.1;
-            }
+            /*imamoVodu: function (svet) {//0 ako nemamo, mozda 0.6 ako imamo da kao zelimo da istrosimo to sto imamo
+                return 0.5;
+            }*/
         },
         komanda: function (svet) {
             return {};
@@ -105,11 +151,24 @@ Akcija.akcije = {
     harvest: {
         parametri: {
             procenatBiljakaSpremnihZaHarvest: function (svet) {//Ili neki odnos procenta
-                return 0.1;
-            },
+                let nasitajlovi = svet.source.tiles;
+                let brojtajlova = nasitajlovi.length;
+                let brojnezalivenogcveca = 0;
+                let brojslobodnihtajlova = brojtajlova;
+                let brojspremnogcveca = 0;
+                for (let i in nasitajlovi) {
+                    if (nasitajlovi[i].bIsPlanted) {
+                        if (nasitajlovi[i].plantDTO.waterNeeded == 0) {
+                            brojspremnogcveca++;
+                        }
+                        brojslobodnihtajlova--;
+                    }
+                }
+                return brojspremnogcveca / (brojtajlova - brojslobodnihtajlova);
+            }/*,
             spremneBiljkeKojeUskoroUmiru: function (svet) {
                 return 0.1;
-            }
+            }*/
         },
         komanda: function (svet) {
             return {};
