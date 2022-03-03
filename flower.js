@@ -14,7 +14,9 @@ const flowers =
     anemone: new Flower(3, 2, 5, 2000),
     blueJazz: new Flower(4, 2, 4, 2500),
     crocus: new Flower(5, 5, 4, 5000),
-    tulip: new Flower(6, 1, 3, 8000),
+    tulip: new Flower(6, 1, 3, 8000)
 }
 
-export {Flower, flowers};
+const flowerArray = {anemone, blueJazz, crocus, tulip};
+
+export {Flower, flowers, flowerArray};
