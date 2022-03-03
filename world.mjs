@@ -11,7 +11,10 @@ class World {
         this.daysTillRain = jsonObj.daysTillRain;
     }
 
-
+    getTile(x, y)
+    {
+        return this.tiles[x*8 + y];
+    }
 }
 
 export { World };
