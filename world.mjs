@@ -1,7 +1,10 @@
+import { Plant } from './plant.mjs';
 import { Player } from './player.mjs';
 import { Tile } from './tile.mjs';
+import {tileOwner} from './tile.mjs'
 
 const WORLD_BORDER = 7;
+const WORLD_SIZE = 64;
 
 function isValidPosition(pos) {
     return !(pos.x < 0 || pos.x > WORLD_BORDER || pos.y < 0 || pos.y > WORLD_BORDER);
@@ -11,9 +14,9 @@ class World {
     constructor(jsonObj) {
         this.tiles = [];
         for (let tile in jsonObj.tiles)
-            this.tiles.push(new Tile(tile));
-        this.source = new Player(jsonObj.source);
-        this.enemy = new Player(jsonObj.enemy);
+            this.tiles.push(world, new Tile(tile));
+        this.source = new Player(world, jsonObj.source);
+        this.enemy = new Player(world, jsonObj.enemy);
         this.daysTillRain = jsonObj.daysTillRain;
     }
 
@@ -21,6 +24,22 @@ class World {
         return this.tiles[x * 8 + y];
     }
 
+    // Zvano da sinhronizuje trenutni svet sa novim stvarima.
+    update(jsonObj)
+    {
+        // ovo na svakom updateu
+        this.daysTillRain = jsonObj.daysTillRain;
+        for(let i = 0; i < WORLD_SIZE; i++)
+            this.tiles[i].owner = tileOwner.none;
+
+        // sad proveravamo plantove
+        for(let i = 0; i < WORLD_SIZE; i++)
+            this.tiles[i].update(jsonObj.tiles[i]);
+
+        // sad updatujemo igrace
+        this.source.update(jsonObj.source, tileOwner.local);
+        this.enemy.update(jsonObj.enemy, tileOwner.enemy);
+    }
     // speed
     getNeighboringTiles(tile) {
         const tiles = [];
@@ -34,7 +53,7 @@ class World {
 
         let pos7 = { x: tile.x, y: tile.y + 1 };
         let pos8 = { x: tile.x, y: tile.y - 1 };
-        
+
         if (isValidPosition(pos1))
             this.tiles.push(this.getTile(pos1.x, pos1.y));
         if (isValidPosition(pos2))

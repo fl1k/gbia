@@ -48,10 +48,7 @@ class ClientSocket {
       console.log(data);
       let msg = data.slice(8);
       const obj = JSON.parse(msg);
-      if(world == null)
-        world = new World(obj);
-      else
-        world.update(obj);
+      world = new World(obj);
       msg = onTick();
       this.sendMessage(msg);
     });

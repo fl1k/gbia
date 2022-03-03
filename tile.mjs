@@ -1,13 +1,33 @@
 import {Plant} from './plant.mjs';
+import {World} from './world.mjs';
 
-class Tile {
-  constructor(jsonObj) {
+export const tileOwner = {
+  none: 0,
+  local: 1,
+  enemy: 2
+};
+
+class Tile 
+{
+  constructor(world, jsonObj) {
+    this.world = world;
     this.x = jsonObj.x;
     this.y = jsonObj.y;
     this.bIsPlanted = jsonObj.bIsPlanted;
     this.bIsSpecial = jsonObj.bIsSpecial;
+    this.owner = tileOwner.none;
     if(this.bIsPlanted)
       this.plant = new Plant(jsonObj.plantDTO);
+  }
+
+  update(jsonObj)
+  {
+    // plant uvek ostaje updatovan jer se konstantno pravi novi objekat
+    this.bIsPlanted = jsonObj.bIsPlanted;
+    if(this.bIsPlanted)
+      this.plant = new Plant(jsonObj.plantDTO);
+    else
+      this.plant = null;
   }
 }
 
