@@ -17,7 +17,7 @@ class Tile
     this.bIsSpecial = jsonObj.bIsSpecial;
     this.owner = tileOwner.none;
     if(this.bIsPlanted)
-      this.plant = new Plant(jsonObj.plantDTO);
+      this.plant = new Plant(this.world, jsonObj.plantDTO);
   }
 
   update(jsonObj)
@@ -25,7 +25,7 @@ class Tile
     // plant uvek ostaje updatovan jer se konstantno pravi novi objekat
     this.bIsPlanted = jsonObj.bIsPlanted;
     if(this.bIsPlanted)
-      this.plant = new Plant(jsonObj.plantDTO);
+      this.plant = new Plant(this.world, jsonObj.plantDTO);
     else
       this.plant = null;
   }
