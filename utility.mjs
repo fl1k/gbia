@@ -175,6 +175,10 @@ Akcija.akcije = {
             }
             let krtice = 0;
             let fertovi = 0;
+            if (pare > 100000) {
+                let kolicina = 1;
+                krtice = 2 * kolicina;
+            }
             if (pare > 300000) {
                 let varr = Math.floor(pare / 300000);
                 brojtulipa += varr * 64;
@@ -184,10 +188,7 @@ Akcija.akcije = {
                     pare -= 30 * 500;
                 }
             }
-            if (pare > 100000) {
-                let kolicina = 1;
-                krtice = 2 * kolicina;
-            }
+            
             console.log("UZETI TULIPI");
             return new InputAction(actionType.buyCards, [
                 new Action(0, 0, 0, (brojtulipa /*+ 5 * brojkrokusa +*/ /*2 * brojbluejazzova*/ /*+ 2 * brojanemona*/)),
@@ -455,6 +456,7 @@ Akcija.akcije = {
             blizinaZutih: function (svet) {
                 let nasaPolja = svet.source.tiles;
                 let zutaPolja = svet.tiles.filter(tile => tile.bIsSpecial);
+                if(svet.source.getAllNearbyTiles().filter(x=>x.owner == tileOwner.none).length == 0) return 0;
                 let min = 10000;
                 let najboljePolje = {};
                 for (let i = 0; i < nasaPolja.length; i++) {
@@ -473,7 +475,7 @@ Akcija.akcije = {
             profitabilnost: function (svet) {//0 ako nemamo para
                 let pare = svet.source.gold;
                 if (pare < 5000) return 0;
-                if (svet.tiles.filter(e => e.owner == tileOwner.none).length == 0) return 0;
+                if(svet.source.getAllNearbyTiles().filter(x=>x.owner == tileOwner.none).length == 0) return 0;
                 let cenacveta = 0;
                 let plodnostcveta = 0;
                 if (svet.daysTillRain == 3) {
