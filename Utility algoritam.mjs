@@ -202,10 +202,10 @@ Akcija.akcije = {
                 for (let i in nasitajlovi) {
                     if (nasitajlovi[i].bIsPlanted) {
                         brojslobodnihtajlova--;
-                    }
-                    if (nasitajlovi[i].plantDTO.waterNeeded > 0) {
-                        if (!(svet.daysTillRain <= 1 && nasitajlovi[i].plantDTO.waterNeeded <= 2)) {
-                            brojnezalivenogcveca++;
+                        if (nasitajlovi[i].plant.waterNeeded > 0) {
+                            if (!(svet.daysTillRain <= 1 && nasitajlovi[i].plant.waterNeeded <= 2)) {
+                                brojnezalivenogcveca++;
+                            }
                         }
                     }
                 }
@@ -231,7 +231,7 @@ Akcija.akcije = {
                 let brojspremnogcveca = 0;
                 for (let i in nasitajlovi) {
                     if (nasitajlovi[i].bIsPlanted) {
-                        if (nasitajlovi[i].plantDTO.waterNeeded == 0) {
+                        if (nasitajlovi[i].plant.waterNeeded == 0) {
                             brojspremnogcveca++;
                         }
                         brojslobodnihtajlova--;

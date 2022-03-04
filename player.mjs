@@ -10,8 +10,7 @@ class Player {
 
     this.tiles = [];
 
-    for (let i = 0; i < jsonObj.tiles.length; i++) 
-    {
+    for (let i = 0; i < jsonObj.tiles.length; i++) {
       let tile = this.world.getTile(jsonObj.tiles[i].x, jsonObj.tiles[i].y);
       tile.owner = tileOwner.local;
       this.tiles.push(tile);
@@ -28,7 +27,7 @@ class Player {
     this.points = jsonObj.points;
     this.gold = jsonObj.gold;
     this.fertilizerActive = jsonObj.fertilizerActive;
-    this.tiles.clear();
+    this.tiles = [];
 
     // updatovati vlasnistvo svakog tilea
     for (let tile in jsonObj.tiles) {
@@ -38,7 +37,7 @@ class Player {
     }
 
     // ocisti sve kartice i ubaci nove
-    this.cards.clear();
+    this.cards = [];
     for (let i = 0; i < jsonObj.cards.length; i++)
       this.cards.push(new Card(jsonObj.cards[i]));
   }
