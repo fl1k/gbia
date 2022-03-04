@@ -1,6 +1,7 @@
 import { Action, InputAction, actionType } from "./actions.mjs";
 import { Plant } from "./plant.mjs";
 import { cardId } from "./card.mjs";
+import {tileOwner} from "./tile.mjs"
 export const Akcija = {};
 
 Akcija.proslaAkcija = null;
@@ -421,7 +422,7 @@ if(svet.source.gold>50000)
         
         },
         komanda: function (svet) {
-            return (new InputAction(actionType.fertilizer, new Action((0,1))));
+            return (new InputAction(actionType.fertilizer, [new Action((0,1))]));
         }
     },
     buyLand: {
@@ -439,13 +440,71 @@ if(svet.source.gold>50000)
     },
     mole: {//Zivotni vek naseg, da stignemo da zalijemo, stanje protivnikovih para u odnosu na nase, mozda je preop i treba sto pre, mozda nekad umesto kupovine
         parametri: {
-            zivotniVekCveca: function (svet) {//0 ako nemamo krticu, malo ako umiru
-                return 0.1;
-            }
-
+           imamoKrticu: function (svet) {//0 ako nemamo krticu, malo ako umiru
+                if(svet.source.getCardCount(cardId.mole))
+                return 1;
+                else return 0;
+            },
+            imaNeprijateljskih:function(svet) {
+                let susedi=svet.source.getAllNearbyTiles();
+                for(let i=0;i<susedi.length;i++)
+                {
+                    if(susedi[i].owner == tileOwner.enemy)
+                    {
+                         return 1;
+                    }
+                }
+                return 0;
+            },
+            
+isplatiSe: function (svet) {
+    let susedi=svet.source.getAllNearbyTiles();
+    let c=0;
+    let min=5;
+    for(let i=0;i<susedi.length;i++)
+    {
+        if(susedi[i].owner == tileOwner.enemy)
+        {
+             c++;
+             if(susedi[i].bIsSpecial)
+             {
+                 c++;
+             }
+             if(susedi[i].bIsPlanted)
+             {
+                 c++;
+             }
+             if(c<min){min=c;}
+        }
+        //moze da se tvikuje na agresiju
+        return min/3;
+    }
+    return 0;
+}
         },
         komanda: function (svet) {
-            return {};
+            let susedi=svet.source.getAllNearbyTiles();
+    let c=0;
+    let min=5;
+    let zaNapad={};
+    for(let i=0;i<susedi.length;i++)
+    {
+        if(susedi[i].owner == tileOwner.enemy)
+        {
+             c++;
+             if(susedi[i].bIsSpecial)
+             {
+                 c++;
+             }
+             if(susedi[i].bIsPlanted)
+             {
+                 c++;
+             }
+             if(c<min){min=c; zaNapad=susedi[i]}
+        }
+        
+    }
+            return (new InputAction(actionType.sendMole,[new Action(zaNapad.x,zaNapad.y)]));
         }
     },
 }
