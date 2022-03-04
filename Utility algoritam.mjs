@@ -71,40 +71,40 @@ Akcija.akcije = {
                 return util;
             },
             profitabilnost: function (svet) {
-                let nasePare = svet.source.gold;
-                //koje cvece je najbolje
-                let brNasihTajlova = 0;
-                for (let i = 0; i < svet.source.tiles.length; i++) {
-                    if (svet.source.tiles[i].bIsSpecial) {
-                        brNasihTajlova += 2;
-                    }
-                    else
-                        brNasihTajlova++;
-                }
-                let c1 = 0;
-                let c2 = 0;
-                let c3 = 0;
-                let c4 = 0;
-                let daniDoKise = svet.daysTillRain;
-                if (daniDoKise <= 3) {
-                    c4 = 0;
-                    if (daniDoKise == 3) {
-                        c2 = (nasePare / (500));
-                        c2 *= 2000;
-                    }
-                    if (c2 > 1)
-                        return 1
-                    else
-                        return c2 / (brNasihTajlova * (8000 - 3600 - 200) / 0.66);
 
+                let pare = svet.source.gold;
+                let kolicinacveca = 0;
+                for (let i in svet.source.tiles) {
+                    if (!svet.source.tiles[i].bIsPlanted) {
+                        kolicinacveca++;
+                    }
+                }
+                let poccvece = kolicinacveca;
+                let brojtulipa = 0;
+                let brojkrokusa = 0;
+                let brojbluejazzova = 0;
+                let brojanemona = 0;
+                let daniDoKise = svet.daysTillRain;
+                if (daniDoKise == 2) { //Kasnije mozda mozemo da se izbulkujemo u cvecu da ne moramo jos da idemo u shop;
+                    let brojbluejazzova = Math.min(kolicinacveca, Math.floor(pare / 500));
+                    pare -= brojbluejazzova * 500;
+                    kolicinacveca -= brojbluejazzova;
+
+                    return (brojtulipa * 4200 + brojkrokusa * 3000 + brojbluejazzova * 1600 + brojanemona * 1100) / (4200 * poccvece) / 0.66;
                 }
                 else {
-                    if (nasePare % (3600 + 200) > 500) {
-                        return (Math.floor((nasePare / 3800) * 7800) + ((nasePare % 3800))) / brNasihTajlova * 7800;
-
-                    }
-                    return (Math.floor((nasePare / 3800) * 7800)) / brNasihTajlova * 7800;
+                    let brojtulipa = Math.min(kolicinacveca, Math.floor(pare / 3800));//Dok nemamo puno kesa;
+                    pare -= brojtulipa * 3800;
+                    kolicinacveca -= brojtulipa;
+                    let brojkrokusa = Math.min(kolicinacveca, Math.floor(pare / 2000));
+                    pare -= brojkrokusa * 2000;
+                    kolicinacveca -= brojkrokusa;
+                    let brojbluejazzova = Math.min(kolicinacveca, Math.floor(pare / 900));
+                    pare -= brojbluejazzova * 2000;
+                    kolicinacveca -= brojbluejazzova;
+                    return (brojtulipa * 4200 + brojkrokusa * 3000 + brojbluejazzova * 1600 + brojanemona * 1100) / (4200 * poccvece)
                 }
+
 
 
             }
@@ -114,6 +114,7 @@ Akcija.akcije = {
 
         },
         komanda: function (svet) {
+            console.log("POZIVAM CARDS");
             //vraca ono sto treba da posaljemo?
             //Odredi ono sto treba da kupimo, uz cvece kupujemo vodu (mozda manje ako mozemo da iskoristimo kisu)
             let pare = svet.source.gold;
@@ -134,18 +135,31 @@ Akcija.akcije = {
                 kolicinacveca -= brojbluejazzova;
             }
             else {
-                let brojtulipa = Math.min(kolicinacveca, Math.floor(pare / 3800));//Dok nemamo puno kesa;
+                console.log("KCSA");
+                console.log(kolicinacveca);
+                console.log(pare);
+                brojtulipa = Math.min(kolicinacveca, Math.floor(pare / 3800));//Dok nemamo puno kesa;
+                console.log(brojtulipa);
                 pare -= brojtulipa * 3800;
                 kolicinacveca -= brojtulipa;
-                let brojkrokusa = Math.min(kolicinacveca, Math.floor(pare / 2000));
+                brojkrokusa = Math.min(kolicinacveca, Math.floor(pare / 2000));
                 pare -= brojkrokusa * 2000;
                 kolicinacveca -= brojkrokusa;
-                let brojbluejazzova = Math.min(kolicinacveca, Math.floor(pare / 900));
+                brojbluejazzova = Math.min(kolicinacveca, Math.floor(pare / 900));
                 pare -= brojbluejazzova * 2000;
                 kolicinacveca -= brojbluejazzova;
             }
+            console.log("DRAFS");
+            console.log(brojtulipa);
+            console.log(new InputAction(actionType.buyCards, [
+                new Action(0, 0, 0, (brojtulipa + 5 * brojkrokusa + 2 * brojbluejazzova + 2 * brojanemona)),
+                new Action(0, 0, 6, brojtulipa),
+                new Action(0, 0, 5, brojkrokusa),
+                new Action(0, 0, 4, brojbluejazzova),
+                new Action(0, 0, 3, brojanemona),
+            ]));
             return new InputAction(actionType.buyCards, [
-                new Action(0, 0, 0, 200 * (brojtulipa + 5 * brojkrokusa + 2 * brojbluejazzova + 2 * brojanemona)),
+                new Action(0, 0, 0, (brojtulipa + 5 * brojkrokusa + 2 * brojbluejazzova + 2 * brojanemona)),
                 new Action(0, 0, 6, brojtulipa),
                 new Action(0, 0, 5, brojkrokusa),
                 new Action(0, 0, 4, brojbluejazzova),
@@ -195,7 +209,7 @@ Akcija.akcije = {
                 return 0.5;
             },*///MOZDA NEKA PROFITABILNOST
             biljkamaPotrebnaVoda: function (svet) {//Da li je potrebno zalivati, i kisa utice na ovo
-                let nasitajlovi = svet.source.tiles;
+                /*let nasitajlovi = svet.source.tiles;
                 let brojtajlova = nasitajlovi.length;
                 let brojnezalivenogcveca = 0;
                 let brojslobodnihtajlova = brojtajlova;
@@ -211,7 +225,8 @@ Akcija.akcije = {
                 }
                 let util = brojnezalivenogcveca / (brojtajlova - brojslobodnihtajlova);
                 //provera da li ima vode mozda?
-                return util;
+                return util;*/
+                return 0.1;
             },
             /*imamoVodu: function (svet) {//0 ako nemamo, mozda 0.6 ako imamo da kao zelimo da istrosimo to sto imamo
                 return 0.5;
@@ -224,7 +239,7 @@ Akcija.akcije = {
     harvest: {
         parametri: {
             procenatBiljakaSpremnihZaHarvest: function (svet) {//Ili neki odnos procenta
-                let nasitajlovi = svet.source.tiles;
+                /*let nasitajlovi = svet.source.tiles;
                 let brojtajlova = nasitajlovi.length;
                 let brojnezalivenogcveca = 0;
                 let brojslobodnihtajlova = brojtajlova;
@@ -237,7 +252,8 @@ Akcija.akcije = {
                         brojslobodnihtajlova--;
                     }
                 }
-                return brojspremnogcveca / (brojtajlova - brojslobodnihtajlova);
+                return brojspremnogcveca / (brojtajlova - brojslobodnihtajlova);*/
+                return 0.1;
             }/*,
             spremneBiljkeKojeUskoroUmiru: function (svet) {
                 return 0.1;
