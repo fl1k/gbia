@@ -4,7 +4,7 @@ const settings = {
     RESTART_TURN: 99,
     RESTART: true,
     PLAYER_NUM: 1,
-    TEAM_NAME: "Miki",
+    TEAM_NAME: "Miki 2",
     RESTART_STRING: "restart",
 
     // Socket Settings

@@ -1,6 +1,6 @@
 import { settings } from './settings.mjs';
 import net from 'net';
-import { Akcija } from './Utility algoritam.mjs';
+import { Akcija } from './utility.mjs';
 
 import { World } from './world.mjs';
 let world = null;

@@ -182,8 +182,7 @@ Akcija.akcije = {
             let fertovi = 0;
             if (pare > 100000) {
                 let kolicina = 1;
-                krtice = kolicina;
-                fertovi = 2 * kolicina;
+                krtice = 1 * kolicina;
             }
             console.log("UZETI TULIPI");
             return new InputAction(actionType.buyCards, [
