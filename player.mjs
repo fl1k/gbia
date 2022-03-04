@@ -4,10 +4,11 @@ import { tileOwner } from './tile.mjs'
 
 class QItem {
 
-  constructor(x, y, w) {
+  constructor(x, y, w, next) {
     this.row = x;
     this.col = y;
     this.dist = w;
+    this.next = next;
   }
 };
 
@@ -72,68 +73,156 @@ class Player {
     return -1;
   }
 
-  getClosest()
+  getClosestSpecial()
   {
-    var source = new QItem(0, 0, 0);
-  
-    // To keep track of visited QItems. Marking
-    // blocked cells as visited.
-    var visited = Array.from(Array(8), ()=>Array(8).fill(0));
-    for (var i = 0; i < 8; i++) 
-    {
-        for (var j = 0; j < 8; j++)
-        {
-            let index = i * 8 + j;
-            if (grid[index])
-                visited[i][j] = true;
-            else
-                visited[i][j] = false;
-        }
+    let shortest = 100;
+    for(let i in this.tiles)
+    {   
+      let x = this.getShortestPath(this.tiles[i], this.world.specialTiles[j]);
+      if(x < shortest)
+        shortest = x;   
     }
-  
-    // applying BFS on matrix cells starting from source
-    var q = [];
-    q.push(source);
-    visited[source.row][source.col] = true;
-    while (q.length!=0) {
-        var p = q[0];
-        q.shift();
-  
-        // Destination found;
-        if (grid[p.row][p.col] == 'd')
-            return p.dist;
-  
-        // moving up
-        if (p.row - 1 >= 0 &&
-            visited[p.row - 1][p.col] == false) {
-            q.push(new QItem(p.row - 1, p.col, p.dist + 1));
-            visited[p.row - 1][p.col] = true;
-        }
-  
-        // moving down
-        if (p.row + 1 < N &&
-            visited[p.row + 1][p.col] == false) {
-            q.push(new QItem(p.row + 1, p.col, p.dist + 1));
-            visited[p.row + 1][p.col] = true;
-        }
-  
-        // moving left
-        if (p.col - 1 >= 0 &&
-            visited[p.row][p.col - 1] == false) {
-            q.push(new QItem(p.row, p.col - 1, p.dist + 1));
-            visited[p.row][p.col - 1] = true;
-        }
-  
-         // moving right
-        if (p.col + 1 < M &&
-            visited[p.row][p.col + 1] == false) {
-            q.push(new QItem(p.row, p.col + 1, p.dist + 1));
-            visited[p.row][p.col + 1] = true;
-        }
-    }
-    return -1;
   }
 
+  getNearestSpecialTile()
+  {
+    const helper = (start) => {var source = new QItem(start.x, start.y, 0, null);
+      let neededIndex = pos.x * 8 + pos.y;
+      // To keep track of visited QItems. Marking
+      // blocked cells as visited.
+      var visited = Array(64).fill(0);
+      for (var i = 0; i < 8; i++) {
+          for (var j = 0; j < 8; j++)
+          {
+            let index = i * 8 + j;
+              if (this.world.tiles[index].tileOwner == tileOwner.enemy)
+                  visited[i][j] = true;
+              else
+                  visited[i][j] = false;
+          }
+      }
+   
+      // applying BFS on matrix cells starting from source
+      var q = [];
+      q.push(source);
+      visited[source.row * 8 + source.col] = true;
+      while (q.length!=0) 
+      {
+          var p = q[0];
+          q.shift();
+   
+          // Destination found;
+          let tile = this.world.getTile(p.row, p.col);
+          if (tile.bIsSpecial && tile.owner == tileOwner.none)
+              return {tile: tile, dist: p.dist};
+   
+          // moving up
+          if (p.row - 1 >= 0 &&
+              visited[(p.row - 1) * 8 +p.col] == false) 
+              {
+              if(p.next == null)
+                q.push(new QItem(p.row - 1, p.col, p.dist + 1, {x: p.row - 1, y: p.col}));
+              else
+                q.push(new QItem(p.row - 1, p.col, p.dist + 1, q.next));
+              visited[(p.row - 1) * 8 + p.col] = true;
+          }
+   
+          // moving down
+          if (p.row + 1 < 8 &&
+              visited[(p.row + 1) * 8 + p.col] == false) {
+              if(p.next == null)
+                q.push(new QItem(p.row + 1, p.col, p.dist + 1, {x: p.row + 1, y: p.col}));
+              else
+                q.push(new QItem(p.row + 1, p.col, p.dist + 1, q.next));
+              visited[(p.row + 1) * 8 + p.col] = true;
+          }
+   
+          // moving left
+          if (p.col - 1 >= 0 &&
+              visited[p.row * 8 + (p.col - 1)] == false) {
+              if(p.next == null)
+                q.push(new QItem(p.row, p.col - 1, p.dist + 1, {x: p.row, y: p.col - 1}));
+              else
+                q.push(new QItem(p.row, p.col - 1, p.dist + 1, q.next));
+              visited[p.row * 8  + (p.col - 1)] = true;
+          }
+   
+           // moving right
+          if (p.col + 1 < 8 &&
+              visited[p.row * 8 + (p.col + 1)] == false) 
+              {
+                if(p.next == null)
+                  q.push(new QItem(p.row, p.col + 1, p.dist + 1, {x: p.row, y: p.col + 1}));
+                else
+                  q.push(new QItem(p.row, p.col + 1, p.dist + 1, q.next));
+              visited[p.row * 8 + (p.col + 1)] = true;
+          }
+
+                // moving right down
+                if (p.col + 1 < 8 && p.row + 1 < 8 &&
+                  visited[(p.row + 1) * 8 + (p.col + 1)] == false) 
+                  {
+                    if(p.next == null)
+                      q.push(new QItem(p.row + 1, p.col + 1, p.dist + 1, {x: p.row + 1, y: p.col + 1}));
+                    else
+                      q.push(new QItem(p.row + 1, p.col + 1, p.dist + 1, q.next));
+                  visited[(p.row + 1)* 8 + (p.col + 1)] = true;
+              }
+
+               // moving right up
+               if (p.col + 1 < 8 && p.row - 1 >= 0 &&
+                visited[(p.row - 1)* 8 + (p.col + 1)] == false) 
+                {
+                  if(p.next == null)
+                    q.push(new QItem(p.row - 1, p.col + 1, p.dist + 1, {x: p.row - 1, y: p.col + 1}));
+                  else
+                    q.push(new QItem(p.row - 1, p.col + 1, p.dist + 1, q.next));
+                visited[(p.row - 1)* 8 + (p.col + 1)] = true;
+            }
+
+
+                // moving left down
+
+            if (p.col - 1 >= 0 && p.row + 1 < 8 &&
+              visited[(p.row + 1) * 8 + (p.col - 1)] == false) 
+              {
+                if(p.next == null)
+                  q.push(new QItem(p.row + 1, p.col - 1, p.dist + 1, {x: p.row + 1, y: p.col - 1}));
+                else
+                  q.push(new QItem(p.row + 1, p.col - 1, p.dist + 1, q.next));
+              visited[(p.row + 1)* 8 + (p.col - 1)] = true;
+          }
+
+           // moving left up
+           if (p.col -1>=0 && p.row - 1>=0 &&
+            visited[(p.row - 1)* 8 + (p.col - 1)] == false) 
+            {
+              if(p.next == null)
+                q.push(new QItem(p.row - 1, p.col - 1, p.dist - 1, {x: p.row - 1, y: p.col - 1}));
+              else
+                q.push(new QItem(p.row - 1, p.col - 1, p.dist - 1, q.next));
+            visited[(p.row - 1)* 8 + (p.col - 1)] = true;
+        }
+      }
+      return -1;
+    }; 
+    let min = 999;
+    let tile = null;
+    for(let i in this.tiles)
+    {
+      let data = helper(this.tiles[i]);
+      if(min > data.dist)
+       {
+         min = data.dist;
+         tile = data.tile;
+       }
+    }
+
+    return tile;
+  }
+   
+
 }
+
 
 export { Player };
