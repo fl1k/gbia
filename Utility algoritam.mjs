@@ -9,6 +9,7 @@ Akcija.predveAkcije = null;
 Akcija.izracunajBitnost = function (akcija, svet) {
     let utilityji = [];
     for (let i in akcija.parametri) {
+        console.log(i + ": " + akcija.parametri[i](svet));
         utilityji.push(akcija.parametri[i](svet));
     }
     let alfa = 1.0 - 1.0 / utilityji.length;
@@ -287,9 +288,15 @@ Akcija.akcije = {
                 let brojslobodnihtajlova = brojtajlova;
                 let zalicu = [];
                 for (let i in nasitajlovi) {
+                    console.log(nasitajlovi[i].bIsPlanted);
+                    console.log("TAJLL");
+                    console.log(nasitajlovi[i]);
+                    if (nasitajlovi[i].bIsPlanted)
+                        console.log(nasitajlovi[i].plant.waterNeeded);
+                    console.log(svet.daysTillRain);
                     if (nasitajlovi[i].bIsPlanted && !nasitajlovi[i].plant.waterNeeded == 0) {
-
                         if (svet.daysTillRain > 1 && nasitajlovi[i].waterNeeded != 2) {
+                            console.log("OVDEEEE");
                             brojnezalivenogcveca++;
                             potrebanBrojVode += nasitajlovi[i].waterNeeded;
                         }

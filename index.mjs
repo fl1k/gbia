@@ -47,7 +47,6 @@ class ClientSocket {
     this.clientSocket.on('data', (data) => {
       let msg = data.slice(8);
       const obj = JSON.parse(msg);
-      console.log(obj);
       if(world == null)
         world = new World(obj);
       else
