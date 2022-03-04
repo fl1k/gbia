@@ -1,7 +1,5 @@
 class Plant {
   constructor(world, jsonObj) {
-    console.log("PLANT JSONOBJ");
-    console.log(jsonObj);
     this.world = world;
     this.plantId = jsonObj.plantId;
     this.goldWorth = jsonObj.goldWorth;

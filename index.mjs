@@ -12,7 +12,6 @@ class ClientSocket {
   turn = 0;
 
   startConnection() {
-    console.log('connecting...')
     this.turn = 0;
     this.clientSocket = new net.Socket();
     this.addEvents();
@@ -37,8 +36,8 @@ class ClientSocket {
   addEvents() {
     this.clientSocket.on('connect', () => {
       this.clientSocket.setEncoding("utf8");
-      console.log(`Established a TCP connection with ${settings.SERVER}:${settings.PLAYER_NUM === 1
-        ? settings.PORT_PLAYER_1 : settings.PORT_PLAYER_2}`);
+      /*console.log(`Established a TCP connection with ${settings.SERVER}:${settings.PLAYER_NUM === 1
+        ? settings.PORT_PLAYER_1 : settings.PORT_PLAYER_2}`);*/
       this.setTeamName();
     });
     this.clientSocket.connect(settings.PLAYER_NUM === 1 ?
@@ -47,11 +46,18 @@ class ClientSocket {
     this.clientSocket.on('data', (data) => {
       let msg = data.slice(8);
       const obj = JSON.parse(msg);
-      if(world == null)
+      if (world == null)
         world = new World(obj);
       else
         world.update(obj);
       msg = onTick();
+      /*if(world.turn <80){
+      this.sendMessage(msg);
+      }else{
+        setTimeout(()=>{
+          this.sendMessage(msg);
+        }, 3000)
+      }*/
       this.sendMessage(msg);
     });
 
