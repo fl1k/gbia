@@ -9,8 +9,6 @@ export const tileOwner = {
 
 class Tile {
   constructor(world, jsonObj) {
-    console.log("JOVB");
-    console.log(jsonObj);
     this.world = world;
     this.x = jsonObj.x;
     this.y = jsonObj.y;
