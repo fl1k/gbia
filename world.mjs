@@ -15,6 +15,7 @@ class World {
         this.tiles = [];
         for (let tile in jsonObj.tiles)
             this.tiles.push(new Tile(this, tile));
+            
         this.source = new Player(this, jsonObj.source);
         this.enemy = new Player(this, jsonObj.enemy);
         this.daysTillRain = jsonObj.daysTillRain;
