@@ -288,15 +288,9 @@ Akcija.akcije = {
                 let brojslobodnihtajlova = brojtajlova;
                 let zalicu = [];
                 for (let i in nasitajlovi) {
-                    console.log(nasitajlovi[i].bIsPlanted);
-                    console.log("TAJLL");
-                    console.log(nasitajlovi[i]);
                     if (nasitajlovi[i].bIsPlanted)
-                        console.log(nasitajlovi[i].plant.waterNeeded);
-                    console.log(svet.daysTillRain);
                     if (nasitajlovi[i].bIsPlanted && !nasitajlovi[i].plant.waterNeeded == 0) {
                         if (svet.daysTillRain > 1 && nasitajlovi[i].waterNeeded != 2) {
-                            console.log("OVDEEEE");
                             brojnezalivenogcveca++;
                             potrebanBrojVode += nasitajlovi[i].waterNeeded;
                         }
@@ -306,9 +300,6 @@ Akcija.akcije = {
                     }
 
                 }
-                console.log("EVO GA BROJ TAJLOVA");
-                console.log(brojnezalivenogcveca);
-                console.log(brojtajlova);
                 let util = brojnezalivenogcveca / (brojtajlova);
                 //provera da li ima vode mozda?
                 return util;
@@ -317,21 +308,22 @@ Akcija.akcije = {
             imamoVodu: function (svet) {//0 ako nemamo, mozda 0.6 ako imamo da kao zelimo da istrosimo to sto imamo
                 let nasitajlovi = svet.source.tiles;
                 let potrebanBrojVode = 0;
+                let brojnezalivenogcveca = 0;
                 for (let i in nasitajlovi) {
                     if (nasitajlovi[i].bIsPlanted && !nasitajlovi[i].plant.waterNeeded == 0) {
-
-                        if (svet.daysTillRain > 1 && nasitajlovi[i].waterNeeded != 2) {
+                        if (svet.daysTillRain > 1 && nasitajlovi[i].plant.waterNeeded != 2) {
                             brojnezalivenogcveca++;
-                            potrebanBrojVode += nasitajlovi[i].waterNeeded;
+                            potrebanBrojVode += nasitajlovi[i].plant.waterNeeded;
                         }
                     }
                 }
-                let brVode = svet.source.getCardCount(cardId.water)
-                    ;
-                if (potrebanBrojVode >= brVode)
+                let brVode = svet.source.getCardCount(cardId.water);
+                if (potrebanBrojVode >= brVode) {
                     return 1;
-                else
+                }
+                else {
                     return brVode / potrebanBrojVode;
+                }
             }
         },
         komanda: function (svet) {
