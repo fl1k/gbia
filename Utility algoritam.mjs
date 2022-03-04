@@ -1,6 +1,7 @@
 import { Action, InputAction, actionType } from "./actions.mjs";
 import { Plant } from "./plant.mjs";
 import { cardId } from "./card.mjs";
+import { tileOwner } from "./tile.mjs";
 export const Akcija = {};
 
 Akcija.proslaAkcija = null;
@@ -289,15 +290,15 @@ Akcija.akcije = {
                 let zalicu = [];
                 for (let i in nasitajlovi) {
                     if (nasitajlovi[i].bIsPlanted)
-                    if (nasitajlovi[i].bIsPlanted && !nasitajlovi[i].plant.waterNeeded == 0) {
-                        if (svet.daysTillRain > 1 && nasitajlovi[i].waterNeeded != 2) {
-                            brojnezalivenogcveca++;
-                            potrebanBrojVode += nasitajlovi[i].waterNeeded;
+                        if (nasitajlovi[i].bIsPlanted && !nasitajlovi[i].plant.waterNeeded == 0) {
+                            if (svet.daysTillRain > 1 && nasitajlovi[i].waterNeeded != 2) {
+                                brojnezalivenogcveca++;
+                                potrebanBrojVode += nasitajlovi[i].waterNeeded;
+                            }
                         }
-                    }
-                    else if (!nasitajlovi[i].bIsPlanted) {
-                        brojslobodnihtajlova++;
-                    }
+                        else if (!nasitajlovi[i].bIsPlanted) {
+                            brojslobodnihtajlova++;
+                        }
 
                 }
                 let util = brojnezalivenogcveca / (brojtajlova);
@@ -351,7 +352,7 @@ Akcija.akcije = {
     harvest: {
         parametri: {
             procenatBiljakaSpremnihZaHarvest: function (svet) {//Ili neki odnos procenta
-                /*let nasitajlovi = svet.source.tiles;
+                let nasitajlovi = svet.source.tiles;
                 let brojtajlova = nasitajlovi.length;
                 let brojnezalivenogcveca = 0;
                 let brojslobodnihtajlova = brojtajlova;
@@ -364,15 +365,14 @@ Akcija.akcije = {
                         brojslobodnihtajlova--;
                     }
                 }
-                return brojspremnogcveca / (brojtajlova - brojslobodnihtajlova);*/
-                return 0.1;
+                return brojspremnogcveca / (brojtajlova - brojslobodnihtajlova);
             }/*,
             spremneBiljkeKojeUskoroUmiru: function (svet) {
                 return 0.1;
             }*/
         },
         komanda: function (svet) {
-            return {};
+            return new InputAction(actionType.harvest, []);
         }
     },
     fertilizer: {//profitabilno, imamo fertilizer
@@ -390,15 +390,183 @@ Akcija.akcije = {
     },
     buyLand: {
         parametri: {//zuta blizu, ima kesa(ne radi ovo ako nema), profitabilno (ima ostatak za kasniju ekspanziju, mozda ako se isplati za 4 poteza, ili 8 ako je puno para)
-            blizinaZutih: function (svet) {
-                return 0.1;
-            },
+            /*blizinaZutih: function (svet) {
+                let nasaPolja = svet.source.tiles;
+                console.log(svet.source.tiles);
+                let zutaPolja = svet.tiles.filter(tile => tile.bIsSpecial);
+                console.log("ZUTA");
+                console.log(zutaPolja);
+                let min = 10000;
+                let najboljePolje = {};
+                for (let i = 0; i < nasaPolja.length; i++) {
+
+                    let trenGledano = nasaPolja[i];
+                    for (let j = 0; j < zutaPolja.length; j++) {
+                        if (Math.max(Math.abs(trenGledano.x - zutaPolja[j].x), Math.abs(trenGledano.y - zutaPolja[j].y)) < min) {
+                            min = Math.max(Math.abs(trenGledano.x - zutaPolja[j].x), Math.abs(trenGledano.y - zutaPolja[j].y));
+                            najboljePolje = trenGledano;
+                        }
+                    }
+
+                }
+                return (1 - min / 8);
+            },*/
             profitabilnost: function (svet) {//0 ako nemamo para
-                return 0.1;
+                let pare = svet.source.gold;
+                if (pare < 5000) return 0;
+                let cenacveta = 0;
+                let plodnostcveta = 0;
+                if (svet.daysTillRain == 3) {
+                    //jazzovi
+                    cenacveta = 500;
+                    plodnostcveta = 2500;
+
+                }
+                else {
+                    //tullipi
+                    cenacveta = 3800;
+                    plodnostcveta = 8000;
+                }
+                let maxbrojmogucih = Math.floor(pare / 5000);
+                let brojslobodnihtajlova = 0;
+                let multiplier = 0;
+                for (let i in svet.source.tiles) {
+                    if (!svet.source.tiles[i].bIsPlanted) {
+                        brojslobodnihtajlova++;
+                    }
+                }
+                let trenmaxcveca = Math.min(Math.floor(pare / cenacveta), brojslobodnihtajlova);
+                let maxcveca = -1;
+                for (let i = 1; i <= maxbrojmogucih; i++) {
+                    pare -= 5000;
+                    brojslobodnihtajlova++;
+                    let amaxcveca = Math.min(Math.floor(pare / cenacveta), brojslobodnihtajlova);
+                    if (amaxcveca > maxcveca) {
+                        maxcveca = amaxcveca;
+                    }
+                }
+                if (maxcveca > trenmaxcveca) {
+                    return 1;
+                }
+                else {
+                    return 0.2;
+                }
             }
         },
         komanda: function (svet) {
-            return {};
+            let pare = svet.source.gold;
+            if (pare < 5000) return 0;
+            let cenacveta = 0;
+            let plodnostcveta = 0;
+            if (svet.daysTillRain == 3) {
+                //jazzovi
+                cenacveta = 500;
+                plodnostcveta = 2500;
+
+            }
+            else {
+                //tullipi
+                cenacveta = 3800;
+                plodnostcveta = 8000;
+            }
+            let maxbrojmogucih = Math.floor(pare / 5000);
+            let brojslobodnihtajlova = 0;
+            let multiplier = 0;
+            for (let i in svet.source.tiles) {
+                if (!svet.source.tiles[i].bIsPlanted) {
+                    brojslobodnihtajlova++;
+                }
+            }
+            let trenmaxcveca = Math.min(Math.floor(pare / cenacveta), brojslobodnihtajlova);
+            let maxcveca = -1;
+            let brojtzakupovinu = 0;
+            for (let i = 1; i <= maxbrojmogucih; i++) {
+                pare -= 5000;
+                brojslobodnihtajlova++;
+                let amaxcveca = Math.min(Math.floor(pare / cenacveta), brojslobodnihtajlova);
+                if (amaxcveca > maxcveca) {
+                    brojtzakupovinu = i;
+                    maxcveca = amaxcveca;
+                }
+            }
+            let nasaPolja = [...svet.source.tiles];
+            let novapolja = [];
+            let zutaPolja = svet.tiles.filter(tile => tile.bIsSpecial).filter(tile => tile.owner == tileOwner.none);
+            if (zutaPolja.length == 0) {
+                for (let i = 0; i < brojtzakupovinu; i++) {
+                    if (novapolja.length == brojtzakupovinu) {
+                        continue;
+                    }
+                    let noviniz = [...nasaPolja, ...novapolja];
+                    for (let j in nasaPolja) {
+                        let slobodnapored = svet.getTilesNearby(nasaPolja[j]).filter(e => e.owner == tileOwner.none);
+                        while (novapolja.length < brojtzakupovinu && slobodnapored.length > 0) {
+                            novapolja.push(slobodnapored.pop());
+                        }
+                    }
+                }
+                if (novapolja.length == 0) {
+                    return new InputAction(actionType.harvest, []);
+                }
+                else {
+                    let stilizovananovapolja = [];
+                    for (let i in novapolja) {
+                        stilizovananovapolja.push(new Action(novapolja[i].x, novapolja[i].y, 0, 1));
+                    }
+                    return new InputAction(actionType.buyLand, stilizovananovapolja);
+                }
+            }
+            for (let i = 0; i < brojtzakupovinu; i++) {
+                let noviniz = [...nasaPolja, ...novapolja];
+                let min = 10000;
+                let najboljePolje = {};
+                let najboljeZuto = {};
+                for (let j in noviniz) {
+                    for (let k in zutaPolja) {
+                        if (Math.max(Math.abs(noviniz[j].x - zutaPolja[k].x), Math.abs(noviniz[j].y - zutaPolja[k].y)) < min) {
+                            min = Math.max(Math.abs(noviniz[j].x - zutaPolja[k].x), Math.abs(noviniz[j].y - zutaPolja[k].y));
+                            najboljePolje = noviniz[j];
+                            najboljeZuto = zutaPolja[k];
+                        }
+                    }
+                }
+                let tx = najboljePolje.x;
+                let ty = najboljePolje.y;
+                if (najboljePolje.x < najboljeZuto.x) {
+                    tx++;
+                }
+                else if (najboljePolje.x > najboljeZuto.x) {
+                    tx--;
+                }
+                if (najboljePolje.y < najboljeZuto.y) {
+                    ty++;
+                }
+                else if (najboljePolje.y > najboljeZuto.y) {
+                    ty--;
+                }
+                let dodatozuto = null;
+                for (let j in zutaPolja) {
+                    if (zutaPolja[j].x == tx && zutaPolja[j].y == ty) {
+                        dodatozuto = zutaPolja[j];
+                    }
+                }
+                if (dodatozuto) {
+                    novapolja.push(dodatozuto);
+                    dodatozuto.owner = tileOwner.local;
+                    zutaPolja = zutaPolja.filter(tile => tile.owner == tileOwner.none);
+                }
+                else {
+                    novapolja.push(svet.getTile(tx, ty));
+                }
+            }
+            let stilizovananovapolja = [];
+            console.log("NOVAPOLJASADA");
+            console.log(novapolja);
+            for (let i in novapolja) {
+                if (novapolja[i])
+                    stilizovananovapolja.push(new Action(novapolja[i].x, novapolja[i].y, 0, 1));
+            }
+            return new InputAction(actionType.buyLand, stilizovananovapolja);
         }
     },
     mole: {//Zivotni vek naseg, da stignemo da zalijemo, stanje protivnikovih para u odnosu na nase, mozda je preop i treba sto pre, mozda nekad umesto kupovine
