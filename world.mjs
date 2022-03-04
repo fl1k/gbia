@@ -19,6 +19,7 @@ class World {
         this.source = new Player(this, jsonObj.source);
         this.enemy = new Player(this, jsonObj.enemy);
         this.daysTillRain = jsonObj.daysTillRain;
+        this.turn = 1;
     }
 
     getTile(x, y) {
@@ -40,6 +41,8 @@ class World {
         // sad updatujemo igrace
         this.source.update(jsonObj.source, tileOwner.local);
         this.enemy.update(jsonObj.enemy, tileOwner.enemy);
+
+        this.turn++;
     }
     // speed
     getTilesNearby(tile) {
@@ -56,22 +59,21 @@ class World {
         let pos8 = { x: tile.x, y: tile.y - 1 };
 
         if (isValidPosition(pos1))
-            this.tiles.push(this.getTile(pos1.x, pos1.y));
+            tiles.push(this.getTile(pos1.x, pos1.y));
         if (isValidPosition(pos2))
-            this.tiles.push(this.getTile(pos2.x, pos2.y));
+            tiles.push(this.getTile(pos2.x, pos2.y));
         if (isValidPosition(pos3))
-            this.tiles.push(this.getTile(pos3.x, pos3.y));
+            tiles.push(this.getTile(pos3.x, pos3.y));
         if (isValidPosition(pos4))
-            this.tiles.push(this.getTile(pos4.x, pos4.y));
+            tiles.push(this.getTile(pos4.x, pos4.y));
         if (isValidPosition(pos5))
-            this.tiles.push(this.getTile(pos5.x, pos5.y));
+            tiles.push(this.getTile(pos5.x, pos5.y));
         if (isValidPosition(pos6))
-            this.tiles.push(this.getTile(pos6.x, pos6.y));
+            tiles.push(this.getTile(pos6.x, pos6.y));
         if (isValidPosition(pos7))
-            this.tiles.push(this.getTile(pos7.x, pos7.y));
+            tiles.push(this.getTile(pos7.x, pos7.y));
         if (isValidPosition(pos8))
-            this.tiles.push(this.getTile(pos8.x, pos8.y));
-
+            tiles.push(this.getTile(pos8.x, pos8.y));
         return tiles;
     }
 }

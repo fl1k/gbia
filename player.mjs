@@ -58,11 +58,11 @@ class Player {
     const closeTiles = [];
     for (let i = 0; i < this.tiles.length; i++) {
       const nearbyTiles = this.world.getTilesNearby(this.tiles[i]);
-      for (let j = 0; j < closeTiles.length; j++)
+      for (let j = 0; j < nearbyTiles.length; j++)
         if (!closeTiles.includes(nearbyTiles[j]))
           closeTiles.push(nearbyTiles[j]);
     }
-    return closeTiles;
+    return closeTiles.filter(x=>x.owner==tileOwner.none);
   }
 
   // owned!
