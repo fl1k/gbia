@@ -52,7 +52,7 @@ Akcija.akcije = {
                     }
                 }
                 let brojMogucegCveca = 0;
-                if (svet.daysTillRain <= 3) {
+                if (svet.daysTillRain == 3) {
                     brojMogucegCveca = Math.floor(pare / 500);
                 }
                 else {
@@ -68,8 +68,44 @@ Akcija.akcije = {
                 let util = brojMogucegCveca / (brojSemena + brojMogucegCveca + (brojtajlova - brojslobodnihtajlova));
                 return util;
             },
-            profitabilnost: function (svet) { //Koliko cemo potencijalno da imamo posle harvesta
-                return 0.1;
+            profitabilnost: function (svet) {
+                let nasePare = svet.source.gold;
+                //koje cvece je najbolje
+                let brNasihTajlova = 0;
+                for (let i = 0; i < svet.source.tiles.length; i++) {
+                    if (svet.source.tiles[i].bIsSpecial) {
+                        brNasihTajlova += 2;
+                    }
+                    else
+                        brNasihTajlova++;
+                }
+                svoCvece = svet.cvece;
+                let c1 = 0;
+                let c2 = 0;
+                let c3 = 0;
+                let c4 = 0;
+                let daniDoKise = svet.daysTillRain;
+                if (daniDoKise <= 3) {
+                    c4 = 0;
+                    if (daniDoKise == 3) {
+                        c2 = (nasePare / (500));
+                        c2 *= 2000;
+                    }
+                    if (c2 > 1)
+                        return 1
+                    else
+                        return c2 / (brNasihTajlova * (8000 - 3600 - 200) / 0.66);
+
+                }
+                else {
+                    if (nasePare % (3600 + 200) > 500) {
+                        return (Math.floor((nasePare / 3800) * 7800) + ((nasePare % 3800))) / brNasihTajlova * 7800;
+
+                    }
+                    return (Math.floor((nasePare / 3800) * 7800)) / brNasihTajlova * 7800;
+                }
+
+
             }
             /*zeljaZaKrticom: function (svet) {//Mozda je dovoljan prvi utility, mozda ovo previse daje prednost krtici
                 return 1;
@@ -79,8 +115,41 @@ Akcija.akcije = {
         komanda: function (svet) {
             //vraca ono sto treba da posaljemo?
             //Odredi ono sto treba da kupimo, uz cvece kupujemo vodu (mozda manje ako mozemo da iskoristimo kisu)
-            //Odredimo mini utility za stvari koje kupujemo
-            return new InputAction(actionType.buyCards, [new Action(0, 0, 0, 1)]);
+            let pare = svet.source.gold;
+            let kolicinacveca = 0;
+            for (let i in svet.source.tiles) {
+                if (!svet.source.tiles[i].bIsPlanted) {
+                    kolicinacveca++;
+                }
+            }
+            let brojtulipa = 0;
+            let brojkrokusa = 0;
+            let brojbluejazzova = 0;
+            let brojanemona = 0;
+            let daniDoKise = svet.daysTillRain;
+            if (daniDoKise == 3) { //Kasnije mozda mozemo da se izbulkujemo u cvecu da ne moramo jos da idemo u shop;
+                let brojbluejazzova = Math.min(kolicinacveca, Math.floor(pare / 500));
+                pare -= brojbluejazzova * 500;
+                kolicinacveca -= brojbluejazzova;
+            }
+            else {
+                let brojtulipa = Math.min(kolicinacveca, Math.floor(pare / 3800));//Dok nemamo puno kesa;
+                pare -= brojtulipa * 3800;
+                kolicinacveca -= brojtulipa;
+                let brojkrokusa = Math.min(kolicinacveca, Math.floor(pare / 2000));
+                pare -= brojkrokusa * 2000;
+                kolicinacveca -= brojkrokusa;
+                let brojbluejazzova = Math.min(kolicinacveca, Math.floor(pare / 900));
+                pare -= brojbluejazzova * 2000;
+                kolicinacveca -= brojbluejazzova;
+            }
+            return new InputAction(actionType.buyCards, [
+                new Action(0, 0, 0, 200 * (brojtulipa + 5 * brojkrokusa + 2 * brojbluejazzova + 2 * brojanemona)),
+                new Action(0, 0, 6, brojtulipa),
+                new Action(0, 0, 5, brojkrokusa),
+                new Action(0, 0, 4, brojbluejazzova),
+                new Action(0, 0, 3, brojanemona),
+            ]);
         }
     },
     planting: {
@@ -90,6 +159,9 @@ Akcija.akcije = {
             },
             nijePlantProsli: function (svet) {//MOzda da zamenimo sa slobodnim platformama za sadjenje, mozda onda da ubacimo odnos onih koje su slobodne i onih koje posedujemo
                 return Action.proslaAkcija == "planting" ? 0.05 : (Action.predveAkcije == "planting" ? 0.1 : 0.6);
+            },*/
+            /*procenatCvecaKojePrezivljavaKisu = function (svet) {
+
             },*/
             kolicinaSemenja: function (svet) { //Koliko imamo semena u odnosu na slobodnu zemlju
                 let nasitajlovi = svet.source.tiles;

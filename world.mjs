@@ -14,9 +14,9 @@ class World {
     constructor(jsonObj) {
         this.tiles = [];
         for (let tile in jsonObj.tiles)
-            this.tiles.push(new Tile(world, tile));
-        this.source = new Player(world, jsonObj.source);
-        this.enemy = new Player(world, jsonObj.enemy);
+            this.tiles.push(new Tile(this, tile));
+        this.source = new Player(this, jsonObj.source);
+        this.enemy = new Player(this, jsonObj.enemy);
         this.daysTillRain = jsonObj.daysTillRain;
     }
 
