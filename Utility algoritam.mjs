@@ -158,6 +158,13 @@ Akcija.akcije = {
                 pare -= brojbluejazzova * 2000;
                 kolicinacveca -= brojbluejazzova;
             }
+            let krtice = 0;
+            let fertovi = 0;
+            if (pare > 32000) {
+                let kolicina = Math.floor(pare / 32000);
+                krtice = kolicina;
+                fertovi = 2 * kolicina;
+            }
             console.log("DRAFS");
             console.log(brojtulipa);
             console.log(new InputAction(actionType.buyCards, [
@@ -166,6 +173,8 @@ Akcija.akcije = {
                 new Action(0, 0, 5, brojkrokusa),
                 new Action(0, 0, 4, brojbluejazzova),
                 new Action(0, 0, 3, brojanemona),
+                new Action(0, 0, 1, krtice),
+                new Action(0, 0, 2, fertovi),
             ]));
             return new InputAction(actionType.buyCards, [
                 new Action(0, 0, 0, (brojtulipa + 5 * brojkrokusa + 2 * brojbluejazzova + 2 * brojanemona)),
@@ -173,6 +182,8 @@ Akcija.akcije = {
                 new Action(0, 0, 5, brojkrokusa),
                 new Action(0, 0, 4, brojbluejazzova),
                 new Action(0, 0, 3, brojanemona),
+                new Action(0, 0, 1, krtice),
+                new Action(0, 0, 2, fertovi),
             ]);
         }
     },
@@ -351,7 +362,7 @@ Akcija.akcije = {
     },
     harvest: {
         parametri: {
-            procenatBiljakaSpremnihZaHarvest: function (svet) {//Ili neki odnos procenta
+            procenatBiljakaSpremnihZaHarvest: function (svet) {
                 let nasitajlovi = svet.source.tiles;
                 let brojtajlova = nasitajlovi.length;
                 let brojnezalivenogcveca = 0;
@@ -375,17 +386,48 @@ Akcija.akcije = {
             return new InputAction(actionType.harvest, []);
         }
     },
-    fertilizer: {//profitabilno, imamo fertilizer
+    fertilizer: {
         parametri: {
-            profitabilnost: function (svet) { //0 alp nemamo, Koliko cemo potencijalno da imamo posle harvesta, 0.95 ako je bas profitabilno
-                return 0.1;
+            koristim: function (svet) {
+                if (svet.source.cards.getCardCount(cardId.fertilizer) > 1)
+                    return 1;
+                else
+                    if (svet.source.cards.getCardCount(cardId.fertilizer) == 1) {
+                        return 0.2;
+                    }
+                return 0;
             },
-            /*imamofertilizer: function (svet) {//0 ako nemamo, 0,6 ako imamo da kao zelimo da ga koristimo
+            profitabilnost: function (svet) {
+                let tiles = svet.source.tiles;
+                let potencijalniProfit = 0
+                for (let i = 0; i < tiles.length; i++) {
+                    if (tiles[i].bIsPlanted && tiles[i].plant.goldWorth > 0) {
+                        if (tiles[i].plant.daysToRot >= 1) {
+                            if (tiles[i].bIsSpecial) {
+                                potencijalniProfit += tiles[i].plant.getWorth()
+                            }
+                            potencijalniProfit += tiles[i].plant.getWorth()
+                        }
+                    }
+                }
+                return potencijalniProfit > 5000;
+            },
+            imamoKes: function (svet) {
+                if (svet.source.gold > 50000) {
+                    if (svet.source.gold > 100000)
+                        return 1;
+                    else return svet.source.gold / 100000;
+                }
+            }
+            , imaDjubre: {
+                function(svet) {
 
-            }*/
+                }
+            }
+
         },
         komanda: function (svet) {
-            return {};
+            return (new InputAction(actionType.fertilizer, [new Action((0, 1))]));
         }
     },
     buyLand: {
@@ -571,13 +613,61 @@ Akcija.akcije = {
     },
     mole: {//Zivotni vek naseg, da stignemo da zalijemo, stanje protivnikovih para u odnosu na nase, mozda je preop i treba sto pre, mozda nekad umesto kupovine
         parametri: {
-            zivotniVekCveca: function (svet) {//0 ako nemamo krticu, malo ako umiru
-                return 0.1;
-            }
+            imamoKrticu: function (svet) {//0 ako nemamo krticu, malo ako umiru
+                if (svet.source.getCardCount(cardId.mole))
+                    return 1;
+                else return 0;
+            },
+            imaNeprijateljskih: function (svet) {
+                let susedi = svet.source.getAllNearbyTiles();
+                for (let i = 0; i < susedi.length; i++) {
+                    if (susedi[i].owner == tileOwner.enemy) {
+                        return 1;
+                    }
+                }
+                return 0;
+            },
 
+            isplatiSe: function (svet) {
+                let susedi = svet.source.getAllNearbyTiles();
+                let c = 0;
+                let min = 5;
+                for (let i = 0; i < susedi.length; i++) {
+                    if (susedi[i].owner == tileOwner.enemy) {
+                        c++;
+                        if (susedi[i].bIsSpecial) {
+                            c++;
+                        }
+                        if (susedi[i].bIsPlanted) {
+                            c++;
+                        }
+                        if (c < min) { min = c; }
+                    }
+                    //moze da se tvikuje na agresiju
+                    return min / 3;
+                }
+                return 0;
+            }
         },
         komanda: function (svet) {
-            return {};
+            let susedi = svet.source.getAllNearbyTiles();
+            let c = 0;
+            let min = 5;
+            let zaNapad = {};
+            for (let i = 0; i < susedi.length; i++) {
+                if (susedi[i].owner == tileOwner.enemy) {
+                    c++;
+                    if (susedi[i].bIsSpecial) {
+                        c++;
+                    }
+                    if (susedi[i].bIsPlanted) {
+                        c++;
+                    }
+                    if (c < min) { min = c; zaNapad = susedi[i] }
+                }
+
+            }
+            return (new InputAction(actionType.sendMole, [new Action(zaNapad.x, zaNapad.y)]));
         }
     },
 }

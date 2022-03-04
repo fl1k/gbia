@@ -9,13 +9,28 @@ class Plant {
     this.daysToRot = jsonObj.daysToRot;
   }
 
-  getNameById(id) {
-    if (id == 3) return "ANEMONE_FLOWER";
-    else if (id == 4) return "BLUE_JAZZ";
-    else if (id == 5) return "CROCUS_FLOWER";
-    else if (id == 6) return "TULIP";
+  getName() {
+    if (this.plantId == 3) return "ANEMONE_FLOWER";
+    else if (this.plantId == 4) return "BLUE_JAZZ";
+    else if (this.plantId == 5) return "CROCUS_FLOWER";
+    else if (this.plantId == 6) return "TULIP";
     return "None";
   }
+  getPrice() {
+    if (this.plantId == 3) return 500;
+    else if (this.plantId == 4) return 500;
+    else if (this.plantId == 5) return 1000;
+    else if (this.plantId == 6) return 3600;
+    return "None";
+  }
+  getWorth() {
+    if (this.plantId == 3) return 2000;
+    else if (this.plantId == 4) return 2500;
+    else if (this.plantId == 5) return 5000;
+    else if (this.plantId == 6) return 8000;
+    return "None";
+  }
+
 
   willSurviveTheRain() 
   {
