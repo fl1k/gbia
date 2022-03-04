@@ -46,7 +46,7 @@ class Player
       this.cards.push(new Card(jsonObj.cards[i]));
   }
 
-  getAllCloseTiles()
+  getAllNearbyTiles()
   {
     const closeTiles = [];
     for(let i = 0; i < this.tiles.length; i++)
