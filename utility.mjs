@@ -82,30 +82,14 @@ Akcija.akcije = {
                     }
                 }
                 let poccvece = kolicinacveca;
-                let brojtulipa = 0;
-                //let brojkrokusa = 0;
-                let brojbluejazzova = 0;
-                //let brojanemona = 0;
                 let daniDoKise = svet.daysTillRain;
-                if (daniDoKise == 2 || daniDoKise == 3) { //Kasnije mozda mozemo da se izbulkujemo u cvecu da ne moramo jos da idemo u shop;
-                    let brojbluejazzova = Math.min(kolicinacveca, Math.floor(pare / 500));
-                    pare -= brojbluejazzova * 500;
-                    kolicinacveca -= brojbluejazzova;
-
-                    return (brojtulipa * 4200 + /*brojkrokusa * 3000 +*/ brojbluejazzova * 1600 /*+ brojanemona * 1100*/) / (4200 * poccvece) / 0.66;
-                }
-                else {
-                    let brojtulipa = Math.min(kolicinacveca, Math.floor(pare / 3800));//Dok nemamo puno kesa;
-                    pare -= brojtulipa * 3800;
-                    kolicinacveca -= brojtulipa;
-                    /*let brojkrokusa = Math.min(kolicinacveca, Math.floor(pare / 2000));
-                    pare -= brojkrokusa * 2000;
-                    kolicinacveca -= brojkrokusa;*/
-                    let brojbluejazzova = Math.min(kolicinacveca, Math.floor(pare / 500));
-                    pare -= brojbluejazzova * 500;
-                    kolicinacveca -= brojbluejazzova;
-                    return (brojtulipa * 4200 /*+ brojkrokusa * 3000*/ + brojbluejazzova * 1600 /*+ brojanemona * 1100*/) / (4200 * poccvece)
-                }
+                let brojtulipa = Math.min(kolicinacveca, Math.floor(pare / 3800));//Dok nemamo puno kesa;
+                pare -= brojtulipa * 3800;
+                kolicinacveca -= brojtulipa;
+                /*let brojkrokusa = Math.min(kolicinacveca, Math.floor(pare / 2000));
+                pare -= brojkrokusa * 2000;
+                kolicinacveca -= brojkrokusa;*/
+                return (brojtulipa * 4200) / (4200 * poccvece)
 
 
 
@@ -126,12 +110,9 @@ Akcija.akcije = {
                 }
             }
             let brojtulipa = 0;
-            //let brojkrokusa = 0;
-            let brojbluejazzova = 0;
-            //let brojanemona = 0;
             let daniDoKise = svet.daysTillRain;
             let fertkarta = 0;
-            if (daniDoKise == 3) {
+            if (daniDoKise == 3 || daniDoKise == 2) {
                 for (let i in svet.source.cards) {
                     if (svet.source.cards[i].cardId == cardId.mole) {
                         if (svet.source.cards[i].owned >= 1) {
@@ -153,49 +134,29 @@ Akcija.akcije = {
                     }
                 }
             }
-            else if (daniDoKise == 2) { //Kasnije mozda mozemo da se izbulkujemo u cvecu da ne moramo jos da idemo u shop;
-                let brojbluejazzova = Math.min(kolicinacveca, Math.floor(pare / 500));
-                pare -= brojbluejazzova * 500;
-                kolicinacveca -= brojbluejazzova;
-                console.log("UZETI JAZZOVI");
-                return new InputAction(actionType.buyCards, [
-                    new Action(0, 0, 4, brojbluejazzova),
-                ]);
-            }
             else {
                 brojtulipa = Math.min(kolicinacveca, Math.floor(pare / 3800));//Dok nemamo puno kesa;
                 pare -= brojtulipa * 3800;
                 kolicinacveca -= brojtulipa;
-                /*brojkrokusa = Math.min(kolicinacveca, Math.floor(pare / 2000));
-                pare -= brojkrokusa * 2000;
-                kolicinacveca -= brojkrokusa;*/
-                brojbluejazzova = Math.min(kolicinacveca, Math.floor(pare / 500));
-                pare -= brojbluejazzova * 500;
-                kolicinacveca -= brojbluejazzova;
             }
             let krtice = 0;
             let fertovi = 0;
             if (pare > 100000) {
-                let kolicina = 1;
-                krtice = 2 * kolicina;
+                let kolicina = 3;
+                krtice = kolicina;
+                pare -= krtice * 10000;
             }
-            if (pare > 300000) {
-                let varr = Math.floor(pare / 300000);
-                brojtulipa += varr * 64;
-                pare -= 64 * 3800;
-                if (svet.source.getCardCount(cardId.blueJazz) < 50) {
-                    brojbluejazzova += 30;
-                    pare -= 30 * 500;
-                }
+            if(svet.source.getAllNearbyTiles().filter(x=>x.owner == tileOwner.none).length == 0){
+                let varr = Math.floor(pare / 3800);
+                brojtulipa += varr;
+                pare -= varr * 3800;
             }
             
+
             console.log("UZETI TULIPI");
             return new InputAction(actionType.buyCards, [
-                new Action(0, 0, 0, (brojtulipa /*+ 5 * brojkrokusa +*/ /*2 * brojbluejazzova*/ /*+ 2 * brojanemona*/)),
+                new Action(0, 0, 0, (brojtulipa)),
                 new Action(0, 0, 6, brojtulipa),
-                //new Action(0, 0, 5, brojkrokusa),
-                new Action(0, 0, 4, brojbluejazzova),
-                //new Action(0, 0, 3, brojanemona),
                 new Action(0, 0, 1, krtice),
                 new Action(0, 0, 2, fertovi),
             ]);
@@ -215,12 +176,8 @@ Akcija.akcije = {
             kolicinaSemenja: function (svet) { //Koliko imamo semena u odnosu na slobodnu zemlju
                 if (svet.daysTillRain == 2) return 0;
                 if (svet.daysTillRain == 1) {
-                    let nasitajlovi = svet.source.tiles;
-                    let nasiresursi = svet.source.cards;
-                    let brojtajlova = nasitajlovi.length;
-                    let brojSemena = svet.source.getCardCount(cardId.blueJazz);
-                    let util = Math.min(1, brojSemena / (brojtajlova));
-                    return util;
+                    return 0;
+                    //VIDETI OVO
                 }
                 else {
                     let nasitajlovi = svet.source.tiles;
@@ -243,7 +200,6 @@ Akcija.akcije = {
             let nasiresursi = svet.source.cards;
             let brojtulipa = 0;
             //let brojkrokusa = 0;
-            let brojbluejazzova = 0;
             //let brojanemona = 0;
 
             for (let i in nasiresursi) {
@@ -252,9 +208,6 @@ Akcija.akcije = {
                 }*/
                 if ((nasiresursi[i].cardId) == 6) {
                     brojtulipa += nasiresursi[i].owned;
-                }
-                if ((nasiresursi[i].cardId) == 4) {
-                    brojbluejazzova += nasiresursi[i].owned;
                 }
                 /*if ((nasiresursi[i].cardId) == 5) {
                     brojkrokusa += nasiresursi[i].owned;
@@ -287,10 +240,6 @@ Akcija.akcije = {
                     nizinstrukcija.push(new Action(trenz.x, trenz.y, 5, 1));
                     brojkrokusa--;
                 }*/
-                else if (brojbluejazzova > 0) {
-                    nizinstrukcija.push(new Action(trenz.x, trenz.y, 4, 1));
-                    brojbluejazzova--;
-                }
                 /*else if (brojanemona > 0) {
                     nizinstrukcija.push(new Action(trenz.x, trenz.y, 3, 1));
                     brojanemona--;
@@ -320,7 +269,7 @@ Akcija.akcije = {
                 let zalicu = [];
                 for (let i in nasitajlovi) {
                     if (nasitajlovi[i].bIsPlanted)
-                        if (nasitajlovi[i].bIsPlanted && nasitajlovi[i].plant.plantId != plantType.BLUE_JAZZ && !nasitajlovi[i].plant.waterNeeded == 0) {
+                        if (nasitajlovi[i].bIsPlanted && !nasitajlovi[i].plant.waterNeeded == 0) {
                             if (svet.daysTillRain > 1 && nasitajlovi[i].waterNeeded != 2) {
                                 brojnezalivenogcveca++;
                                 potrebanBrojVode += nasitajlovi[i].waterNeeded;
@@ -367,7 +316,7 @@ Akcija.akcije = {
             for (let i in nasitajlovi) {
                 if (nasitajlovi[i].bIsPlanted && !nasitajlovi[i].plant.waterNeeded == 0) {
 
-                    if (svet.daysTillRain > 1 && nasitajlovi[i].waterNeeded != 2 && nasitajlovi[i].plant.plantId != plantType.BLUE_JAZZ) {
+                    if (svet.daysTillRain > 1 && nasitajlovi[i].waterNeeded != 2) {
                         brojnezalivenogcveca++;
                         potrebanBrojVode += nasitajlovi[i].waterNeeded;
                         zalicu.push(nasitajlovi[i])
@@ -456,7 +405,7 @@ Akcija.akcije = {
             blizinaZutih: function (svet) {
                 let nasaPolja = svet.source.tiles;
                 let zutaPolja = svet.tiles.filter(tile => tile.bIsSpecial);
-                if(svet.source.getAllNearbyTiles().filter(x=>x.owner == tileOwner.none).length == 0) return 0;
+                if (svet.source.getAllNearbyTiles().filter(x => x.owner == tileOwner.none).length == 0) return 0;
                 let min = 10000;
                 let najboljePolje = {};
                 for (let i = 0; i < nasaPolja.length; i++) {
@@ -475,20 +424,11 @@ Akcija.akcije = {
             profitabilnost: function (svet) {//0 ako nemamo para
                 let pare = svet.source.gold;
                 if (pare < 5000) return 0;
-                if(svet.source.getAllNearbyTiles().filter(x=>x.owner == tileOwner.none).length == 0) return 0;
+                if (svet.source.getAllNearbyTiles().filter(x => x.owner == tileOwner.none).length == 0) return 0;
                 let cenacveta = 0;
                 let plodnostcveta = 0;
-                if (svet.daysTillRain == 3) {
-                    //jazzovi
-                    cenacveta = 500;
-                    plodnostcveta = 2500;
-
-                }
-                else {
-                    //tullipi
-                    cenacveta = 3800;
-                    plodnostcveta = 8000;
-                }
+                cenacveta = 3800;
+                plodnostcveta = 8000;
                 let maxbrojmogucih = Math.floor(pare / 5000);
                 let brojslobodnihtajlova = 0;
                 let multiplier = 0;
@@ -521,17 +461,8 @@ Akcija.akcije = {
             let cenacveta = 0;
             let plodnostcveta = 0;
             let brojslobodnihtajlova = 0;
-            if (svet.daysTillRain == 3) {
-                //jazzovi
-                cenacveta = 500;
-                plodnostcveta = 2500;
-
-            }
-            else {
-                //tullipi
-                cenacveta = 3800;
-                plodnostcveta = 8000;
-            }
+            cenacveta = 3800;
+            plodnostcveta = 8000;
             for (let i in svet.source.tiles) {
                 if (!svet.source.tiles[i].bIsPlanted) {
                     brojslobodnihtajlova++;
