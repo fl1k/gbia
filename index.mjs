@@ -45,9 +45,9 @@ class ClientSocket {
       settings.PORT_PLAYER_1 : settings.PORT_PLAYER_2, settings.SERVER);
 
     this.clientSocket.on('data', (data) => {
-      console.log(data);
       let msg = data.slice(8);
       const obj = JSON.parse(msg);
+      console.log(obj);
       if(world == null)
         world = new World(obj);
       else

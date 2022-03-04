@@ -21,8 +21,10 @@ Akcija.izracunajBitnost = function (akcija, svet) {
 Akcija.odrediAkciju = function (akcije, svet) {
     let maxbitnost = -1;
     let maxakcija = "cards";
+    console.log("BITNOSTI");
     for (let i in akcije) {
         let bitnost = Akcija.izracunajBitnost(akcije[i], svet);
+        console.log(i + ": " + bitnost);
         if (bitnost > maxbitnost) {
             maxakcija = i;
             maxbitnost = akcije[maxakcija];
@@ -79,7 +81,6 @@ Akcija.akcije = {
                     else
                         brNasihTajlova++;
                 }
-                svoCvece = svet.cvece;
                 let c1 = 0;
                 let c2 = 0;
                 let c3 = 0;

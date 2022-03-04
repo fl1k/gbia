@@ -32,7 +32,7 @@ class Player {
 
     // updatovati vlasnistvo svakog tilea
     for (let tile in jsonObj.tiles) {
-      let wTile = this.world.getTile(tile.x, tile.y);
+      let wTile = this.world.getTile(jsonObj.tiles[tile].x, jsonObj.tiles[tile].y);
       wTile.owner = tileOwner;
       this.tiles.push(wTile);
     }
