@@ -1,5 +1,5 @@
 import { Action, InputAction, actionType } from "./actions.mjs";
-import { Plant } from "./plant.mjs";
+import { Plant, plantType } from "./plant.mjs";
 import { cardId } from "./card.mjs";
 import { tileOwner } from "./tile.mjs";
 export const Akcija = {};
@@ -48,10 +48,6 @@ Akcija.akcije = {
             necuBuyLand: function (svet) {
                 return 1 - Akcija.izracunajBitnost(Akcija.akcije["buyLand"], svet);
             },
-            manjakTulipa: function (svet) {
-
-                //return 1 - svet.source.getCardCount(cardId.tulip)/(svet.source.getCardCount(cardId.tulip)+svet.source.getCardCount(cardId.blueJazz)+svet.source.getCardCount(cardId.crocusFlower)+svet.source.getCardCount(cardId.anemoneFlower))
-            },
             manjakResursa: function (svet) { //Manjak resursa u odnosu na kes
                 let pare = svet.source.gold;
                 if (pare < 500) return 0;
@@ -65,12 +61,7 @@ Akcija.akcije = {
                     }
                 }
                 let brojMogucegCveca = 0;
-                if (svet.daysTillRain == 3) {
-                    brojMogucegCveca = Math.floor(pare / 500);
-                }
-                else {
-                    brojMogucegCveca = Math.floor(pare / 900);
-                }
+                brojMogucegCveca = Math.floor(pare / 3800);//VRATITI SE OVDE
                 let brojslobodnihtajlova = brojtajlova;
                 for (let i in nasitajlovi) {
                     if (nasitajlovi[i].bIsPlanted) {
@@ -92,28 +83,28 @@ Akcija.akcije = {
                 }
                 let poccvece = kolicinacveca;
                 let brojtulipa = 0;
-                let brojkrokusa = 0;
+                //let brojkrokusa = 0;
                 let brojbluejazzova = 0;
-                let brojanemona = 0;
+                //let brojanemona = 0;
                 let daniDoKise = svet.daysTillRain;
                 if (daniDoKise == 2 || daniDoKise == 3) { //Kasnije mozda mozemo da se izbulkujemo u cvecu da ne moramo jos da idemo u shop;
                     let brojbluejazzova = Math.min(kolicinacveca, Math.floor(pare / 500));
                     pare -= brojbluejazzova * 500;
                     kolicinacveca -= brojbluejazzova;
 
-                    return (brojtulipa * 4200 + brojkrokusa * 3000 + brojbluejazzova * 1600 + brojanemona * 1100) / (4200 * poccvece) / 0.66;
+                    return (brojtulipa * 4200 + /*brojkrokusa * 3000 +*/ brojbluejazzova * 1600 /*+ brojanemona * 1100*/) / (4200 * poccvece) / 0.66;
                 }
                 else {
                     let brojtulipa = Math.min(kolicinacveca, Math.floor(pare / 3800));//Dok nemamo puno kesa;
                     pare -= brojtulipa * 3800;
                     kolicinacveca -= brojtulipa;
-                    let brojkrokusa = Math.min(kolicinacveca, Math.floor(pare / 2000));
+                    /*let brojkrokusa = Math.min(kolicinacveca, Math.floor(pare / 2000));
                     pare -= brojkrokusa * 2000;
-                    kolicinacveca -= brojkrokusa;
-                    let brojbluejazzova = Math.min(kolicinacveca, Math.floor(pare / 900));
-                    pare -= brojbluejazzova * 2000;
+                    kolicinacveca -= brojkrokusa;*/
+                    let brojbluejazzova = Math.min(kolicinacveca, Math.floor(pare / 500));
+                    pare -= brojbluejazzova * 500;
                     kolicinacveca -= brojbluejazzova;
-                    return (brojtulipa * 4200 + brojkrokusa * 3000 + brojbluejazzova * 1600 + brojanemona * 1100) / (4200 * poccvece)
+                    return (brojtulipa * 4200 /*+ brojkrokusa * 3000*/ + brojbluejazzova * 1600 /*+ brojanemona * 1100*/) / (4200 * poccvece)
                 }
 
 
@@ -135,9 +126,9 @@ Akcija.akcije = {
                 }
             }
             let brojtulipa = 0;
-            let brojkrokusa = 0;
+            //let brojkrokusa = 0;
             let brojbluejazzova = 0;
-            let brojanemona = 0;
+            //let brojanemona = 0;
             let daniDoKise = svet.daysTillRain;
             let fertkarta = 0;
             if (daniDoKise == 3) {
@@ -175,11 +166,11 @@ Akcija.akcije = {
                 brojtulipa = Math.min(kolicinacveca, Math.floor(pare / 3800));//Dok nemamo puno kesa;
                 pare -= brojtulipa * 3800;
                 kolicinacveca -= brojtulipa;
-                brojkrokusa = Math.min(kolicinacveca, Math.floor(pare / 2000));
+                /*brojkrokusa = Math.min(kolicinacveca, Math.floor(pare / 2000));
                 pare -= brojkrokusa * 2000;
-                kolicinacveca -= brojkrokusa;
-                brojbluejazzova = Math.min(kolicinacveca, Math.floor(pare / 900));
-                pare -= brojbluejazzova * 2000;
+                kolicinacveca -= brojkrokusa;*/
+                brojbluejazzova = Math.min(kolicinacveca, Math.floor(pare / 500));
+                pare -= brojbluejazzova * 500;
                 kolicinacveca -= brojbluejazzova;
             }
             let krtice = 0;
@@ -190,7 +181,7 @@ Akcija.akcije = {
                 pare -= 64 * 3800;
                 if (svet.source.getCardCount(cardId.blueJazz) < 50) {
                     brojbluejazzova += 30;
-                    pare -= 30 * 900;
+                    pare -= 30 * 500;
                 }
             }
             if (pare > 100000) {
@@ -199,11 +190,11 @@ Akcija.akcije = {
             }
             console.log("UZETI TULIPI");
             return new InputAction(actionType.buyCards, [
-                new Action(0, 0, 0, (brojtulipa + 5 * brojkrokusa + 2 * brojbluejazzova + 2 * brojanemona)),
+                new Action(0, 0, 0, (brojtulipa /*+ 5 * brojkrokusa +*/ /*2 * brojbluejazzova*/ /*+ 2 * brojanemona*/)),
                 new Action(0, 0, 6, brojtulipa),
-                new Action(0, 0, 5, brojkrokusa),
+                //new Action(0, 0, 5, brojkrokusa),
                 new Action(0, 0, 4, brojbluejazzova),
-                new Action(0, 0, 3, brojanemona),
+                //new Action(0, 0, 3, brojanemona),
                 new Action(0, 0, 1, krtice),
                 new Action(0, 0, 2, fertovi),
             ]);
@@ -221,17 +212,23 @@ Akcija.akcije = {
 
             },*/
             kolicinaSemenja: function (svet) { //Koliko imamo semena u odnosu na slobodnu zemlju
-                let nasitajlovi = svet.source.tiles;
-                let nasiresursi = svet.source.cards;
-                let brojtajlova = nasitajlovi.length;
-                let brojSemena = 0;
-                for (let i in nasiresursi) {
-                    if ((nasiresursi[i].cardId) > 2) {
-                        brojSemena += nasiresursi[i].owned;
-                    }
+                if (svet.daysTillRain == 2) return 0;
+                if (svet.daysTillRain == 1) {
+                    let nasitajlovi = svet.source.tiles;
+                    let nasiresursi = svet.source.cards;
+                    let brojtajlova = nasitajlovi.length;
+                    let brojSemena = svet.source.getCardCount(cardId.blueJazz);
+                    let util = Math.min(1, brojSemena / (brojtajlova));
+                    return util;
                 }
-                let util = Math.min(1, brojSemena / (brojtajlova));
-                return util;
+                else {
+                    let nasitajlovi = svet.source.tiles;
+                    let nasiresursi = svet.source.cards;
+                    let brojtajlova = nasitajlovi.length;
+                    let brojSemena = svet.source.getCardCount(cardId.tulip);
+                    let util = Math.min(1, brojSemena / (brojtajlova));
+                    return util;
+                }
             },
             brojSlobodnih: function (svet) {
                 return svet.source.tiles.filter(e => !e.bIsPlanted).length / svet.source.tiles.length;
@@ -244,23 +241,23 @@ Akcija.akcije = {
             let nasitajlovi = svet.source.tiles;
             let nasiresursi = svet.source.cards;
             let brojtulipa = 0;
-            let brojkrokusa = 0;
+            //let brojkrokusa = 0;
             let brojbluejazzova = 0;
-            let brojanemona = 0;
+            //let brojanemona = 0;
 
             for (let i in nasiresursi) {
-                if ((nasiresursi[i].cardId) == 3) {
+                /*if ((nasiresursi[i].cardId) == 3) {
                     brojanemona += nasiresursi[i].owned;
+                }*/
+                if ((nasiresursi[i].cardId) == 6) {
+                    brojtulipa += nasiresursi[i].owned;
                 }
                 if ((nasiresursi[i].cardId) == 4) {
                     brojbluejazzova += nasiresursi[i].owned;
                 }
-                if ((nasiresursi[i].cardId) == 5) {
+                /*if ((nasiresursi[i].cardId) == 5) {
                     brojkrokusa += nasiresursi[i].owned;
-                }
-                if ((nasiresursi[i].cardId) == 6) {
-                    brojtulipa += nasiresursi[i].owned;
-                }
+                }*/
             }
             for (let i in nasitajlovi) {
                 if (!nasitajlovi[i].bIsPlanted) {
@@ -285,18 +282,18 @@ Akcija.akcije = {
                     nizinstrukcija.push(new Action(trenz.x, trenz.y, 6, 1));
                     brojtulipa--;
                 }
-                else if (brojkrokusa > 0) {
+                /*else if (brojkrokusa > 0) {
                     nizinstrukcija.push(new Action(trenz.x, trenz.y, 5, 1));
                     brojkrokusa--;
-                }
+                }*/
                 else if (brojbluejazzova > 0) {
                     nizinstrukcija.push(new Action(trenz.x, trenz.y, 4, 1));
                     brojbluejazzova--;
                 }
-                else if (brojanemona > 0) {
+                /*else if (brojanemona > 0) {
                     nizinstrukcija.push(new Action(trenz.x, trenz.y, 3, 1));
                     brojanemona--;
-                }
+                }*/
             }
             return new InputAction(actionType.plant, nizinstrukcija);
         }
@@ -322,7 +319,7 @@ Akcija.akcije = {
                 let zalicu = [];
                 for (let i in nasitajlovi) {
                     if (nasitajlovi[i].bIsPlanted)
-                        if (nasitajlovi[i].bIsPlanted && !nasitajlovi[i].plant.waterNeeded == 0) {
+                        if (nasitajlovi[i].bIsPlanted && nasitajlovi[i].plant.plantId != plantType.BLUE_JAZZ && !nasitajlovi[i].plant.waterNeeded == 0) {
                             if (svet.daysTillRain > 1 && nasitajlovi[i].waterNeeded != 2) {
                                 brojnezalivenogcveca++;
                                 potrebanBrojVode += nasitajlovi[i].waterNeeded;
@@ -369,7 +366,7 @@ Akcija.akcije = {
             for (let i in nasitajlovi) {
                 if (nasitajlovi[i].bIsPlanted && !nasitajlovi[i].plant.waterNeeded == 0) {
 
-                    if (svet.daysTillRain > 1 && nasitajlovi[i].waterNeeded != 2) {
+                    if (svet.daysTillRain > 1 && nasitajlovi[i].waterNeeded != 2 && nasitajlovi[i].plant.plantId != plantType.BLUE_JAZZ) {
                         brojnezalivenogcveca++;
                         potrebanBrojVode += nasitajlovi[i].waterNeeded;
                         zalicu.push(nasitajlovi[i])
