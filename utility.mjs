@@ -180,9 +180,16 @@ Akcija.akcije = {
             }
             let krtice = 0;
             let fertovi = 0;
+            if (pare > 600000) {
+                let varr = Math.floor(pare / 600000);
+                brojtulipa += varr * 128;
+                pare -= 128 * 3800;
+                brojbluejazzova += 80;
+                pare -= 80 * 900;
+            }
             if (pare > 100000) {
                 let kolicina = 1;
-                krtice = 1 * kolicina;
+                krtice = 2 * kolicina;
             }
             console.log("UZETI TULIPI");
             return new InputAction(actionType.buyCards, [
@@ -219,6 +226,9 @@ Akcija.akcije = {
                 }
                 let util = Math.min(1, brojSemena / (brojtajlova));
                 return util;
+            },
+            brojSlobodnih: function (svet) {
+                return svet.source.tiles.filter(e => !e.bIsPlanted).length / svet.source.tiles.length;
             }
 
         },
@@ -265,7 +275,7 @@ Akcija.akcije = {
                 else {
                     trenz = normalni.pop();
                 }
-                if (brojtulipa > 0) {
+                if (brojtulipa > 0 && svet.daysTillRain > 2) {
                     nizinstrukcija.push(new Action(trenz.x, trenz.y, 6, 1));
                     brojtulipa--;
                 }
@@ -319,6 +329,7 @@ Akcija.akcije = {
                 }
                 let util = brojnezalivenogcveca / (brojtajlova);
                 //provera da li ima vode mozda?
+                console.log("UTIL JE " + util);
                 return util;
 
             },
@@ -335,7 +346,7 @@ Akcija.akcije = {
                     }
                 }
                 let brVode = svet.source.getCardCount(cardId.water);
-                if (potrebanBrojVode >= brVode) {
+                if (potrebanBrojVode <= brVode) {
                     return 1;
                 }
                 else {
