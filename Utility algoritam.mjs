@@ -18,6 +18,7 @@ Akcija.izracunajBitnost = function (akcija, svet) {
     }
     return proizvod;
 }
+Akcija.brojacptren = 1;
 Akcija.odrediAkciju = function (akcije, svet) {
     let maxbitnost = -1;
     let maxakcija = "cards";
@@ -28,8 +29,11 @@ Akcija.odrediAkciju = function (akcije, svet) {
         if (bitnost > maxbitnost) {
             maxakcija = i;
             maxbitnost = akcije[maxakcija];
+            console.log("MAXAKCIJA je" + maxakcija);
         }
     }
+    console.log("MAXAK" + (Akcija.brojacptren++));
+    console.log(maxakcija);
     let zeljenaAkcija = akcije[maxakcija];
     Akcija.predveAkcije = Akcija.proslaAkcija;
     Akcija.proslaAkcija = maxakcija;
@@ -194,7 +198,68 @@ Akcija.akcije = {
 
         },
         komanda: function (svet) {
-            return {};
+            let zlatni = [];
+            let normalni = [];
+            let nasitajlovi = svet.source.tiles;
+            let nasiresursi = svet.source.cards;
+            let brojtulipa = 0;
+            let brojkrokusa = 0;
+            let brojbluejazzova = 0;
+            let brojanemona = 0;
+
+            for (let i in nasiresursi) {
+                if ((nasiresursi[i].cardId) == 3) {
+                    brojanemona += nasiresursi[i].owned;
+                }
+                if ((nasiresursi[i].cardId) == 4) {
+                    brojbluejazzova += nasiresursi[i].owned;
+                }
+                if ((nasiresursi[i].cardId) == 5) {
+                    brojkrokusa += nasiresursi[i].owned;
+                }
+                if ((nasiresursi[i].cardId) == 6) {
+                    brojtulipa += nasiresursi[i].owned;
+                }
+            }
+            for (let i in nasitajlovi) {
+                if (!nasitajlovi[i].bIsPlanted) {
+                    if (nasitajlovi[i].bIsSpecial) {
+                        zlatni.push(nasitajlovi[i]);
+                    }
+                    else {
+                        normalni.push(nasitajlovi[i]);
+                    }
+                }
+            }
+            let nizinstrukcija = [];
+            while (zlatni.length > 0 && normalni.length > 0) {
+                let trenz;
+                if (zlatni.length > 0) {
+                    trenz = zlatni.pop();
+                }
+                else {
+                    trenz = normalni.pop();
+                }
+                if (brojtulipa > 0) {
+                    nizinstrukcija.push(new Action(trenz.x, trenz.y, 6, 1));
+                    brojtulipa--;
+                }
+                else if (brojkrokusa > 0) {
+                    nizinstrukcija.push(new Action(trenz.x, trenz.y, 5, 1));
+                    brojkrokusa--;
+                }
+                else if (brojbluejazzova > 0) {
+                    nizinstrukcija.push(new Action(trenz.x, trenz.y, 4, 1));
+                    brojbluejazzova--;
+                }
+                else if (brojanemona > 0) {
+                    nizinstrukcija.push(new Action(trenz.x, trenz.y, 3, 1));
+                    brojanemona--;
+                }
+            }
+            console.log("DRUGOGOV");
+            console.log(new InputAction(actionType.plant, nizinstrukcija));
+            return new InputAction(actionType.plant, nizinstrukcija);
         }
     },
     watering: {
