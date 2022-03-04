@@ -48,6 +48,10 @@ Akcija.akcije = {
             necuBuyLand: function (svet) {
                 return 1 - Akcija.izracunajBitnost(Akcija.akcije["buyLand"], svet);
             },
+            manjakTulipa: function (svet) {
+
+                //return 1 - svet.source.getCardCount(cardId.tulip)/(svet.source.getCardCount(cardId.tulip)+svet.source.getCardCount(cardId.blueJazz)+svet.source.getCardCount(cardId.crocusFlower)+svet.source.getCardCount(cardId.anemoneFlower))
+            },
             manjakResursa: function (svet) { //Manjak resursa u odnosu na kes
                 let pare = svet.source.gold;
                 if (pare < 500) return 0;
@@ -180,12 +184,14 @@ Akcija.akcije = {
             }
             let krtice = 0;
             let fertovi = 0;
-            if (pare > 600000) {
-                let varr = Math.floor(pare / 600000);
-                brojtulipa += varr * 128;
-                pare -= 128 * 3800;
-                brojbluejazzova += 80;
-                pare -= 80 * 900;
+            if (pare > 300000) {
+                let varr = Math.floor(pare / 300000);
+                brojtulipa += varr * 64;
+                pare -= 64 * 3800;
+                if (svet.source.getCardCount(cardId.blueJazz) < 50) {
+                    brojbluejazzova += 30;
+                    pare -= 30 * 900;
+                }
             }
             if (pare > 100000) {
                 let kolicina = 1;
