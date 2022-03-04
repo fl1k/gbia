@@ -52,6 +52,15 @@ class Player {
     }
     return closeTiles;
   }
+
+  // owned!
+  getCardCount(cardId)
+  {
+    for(let i in this.cards)
+      if(this.cards[i].cardId == cardId)
+        return this.cards[i].owned;
+    return -1;
+  }
 }
 
 export { Player };

@@ -1,5 +1,6 @@
 import { Action, InputAction, actionType } from "./actions.mjs";
-
+import { Plant } from "./plant.mjs";
+import{cardId} from "./card.mjs";
 export const Akcija = {};
 
 Akcija.proslaAkcija = null;
@@ -274,31 +275,75 @@ Akcija.akcije = {
                 return 0.5;
             },*///MOZDA NEKA PROFITABILNOST
             biljkamaPotrebnaVoda: function (svet) {//Da li je potrebno zalivati, i kisa utice na ovo
-                /*let nasitajlovi = svet.source.tiles;
+                let nasitajlovi = svet.source.tiles;
                 let brojtajlova = nasitajlovi.length;
                 let brojnezalivenogcveca = 0;
+                let brPlantovanih=0;
+                let potrebanBrojVode=0;
                 let brojslobodnihtajlova = brojtajlova;
+                let zalicu=[];
                 for (let i in nasitajlovi) {
-                    if (nasitajlovi[i].bIsPlanted) {
-                        brojslobodnihtajlova--;
-                        if (nasitajlovi[i].plant.waterNeeded > 0) {
-                            if (!(svet.daysTillRain <= 1 && nasitajlovi[i].plant.waterNeeded <= 2)) {
-                                brojnezalivenogcveca++;
-                            }
+                    if (nasitajlovi[i].bIsPlanted && !nasitajlovi[i].plant.waterNeeded==0) {
+                        
+                        if(svet.daysTillRain>1 && nasitajlovi[i].waterNeeded!=2)
+                        {
+                            brojnezalivenogcveca++;
+                       potrebanBrojVode+=nasitajlovi[i].waterNeeded;
+                        }
+                    }
+                    else if(!nasitajlovi[i].bIsPlanted )
+                    {
+ brojslobodnihtajlova++;
+                    }
+                    
+                }
+                let util = brojnezalivenogcveca / (brojtajlova );
+                //provera da li ima vode mozda?
+                return util;
+              
+            },
+            imamoVodu: function (svet) {//0 ako nemamo, mozda 0.6 ako imamo da kao zelimo da istrosimo to sto imamo
+                let nasitajlovi = svet.source.tiles;
+                let potrebanBrojVode=0;
+                for (let i in nasitajlovi) {
+                    if (nasitajlovi[i].bIsPlanted && !nasitajlovi[i].plant.waterNeeded==0) {
+                        
+                        if(svet.daysTillRain>1 && nasitajlovi[i].waterNeeded!=2)
+                        {
+                            brojnezalivenogcveca++;
+                       potrebanBrojVode+=nasitajlovi[i].waterNeeded;
                         }
                     }
                 }
-                let util = brojnezalivenogcveca / (brojtajlova - brojslobodnihtajlova);
-                //provera da li ima vode mozda?
-                return util;*/
-                return 0.1;
-            },
-            /*imamoVodu: function (svet) {//0 ako nemamo, mozda 0.6 ako imamo da kao zelimo da istrosimo to sto imamo
-                return 0.5;
-            }*/
+                let brVode=svet.source.getCardCount(cardId.water)
+                ;
+                if(potrebanBrojVode>=brVode)
+                return 1;
+                else
+                return brVode/potrebanBrojVode;
+            }
         },
         komanda: function (svet) {
-            return {};
+            let nasitajlovi = svet.source.tiles;
+            let brojnezalivenogcveca = 0;
+            let potrebanBrojVode=0;
+            let zalicu=[];
+            let nizInstrukcija=[];
+            for (let i in nasitajlovi) {
+                if (nasitajlovi[i].bIsPlanted && !nasitajlovi[i].plant.waterNeeded==0) {
+                    
+                    if(svet.daysTillRain>1 && nasitajlovi[i].waterNeeded!=2)
+                    {
+                        brojnezalivenogcveca++;
+                   potrebanBrojVode+=nasitajlovi[i].waterNeeded;
+                   zalicu.push(nasitajlovi[i])
+                   nizInstrukcija.push(new Action(nasitajlovi[i].x,nasitajlovi[i].y,0,nasitajlovi[i].plant.waterNeeded))
+                    }
+                }
+                
+                
+            }
+            return (new InputAction(actionType.watering,nizInstrukcija));
         }
     },
     harvest: {

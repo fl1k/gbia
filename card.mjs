@@ -7,7 +7,7 @@ class Card
     }
 }
 
-const cardIds = {
+const cardId = {
     water: 0,
     mole: 1,
     fertilizer: 2,
@@ -17,4 +17,4 @@ const cardIds = {
     tulip: 6
 }
 
-export {Card, cardIds};
+export {Card, cardId};
