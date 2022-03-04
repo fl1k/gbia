@@ -141,12 +141,13 @@ Akcija.akcije = {
             }
             let krtice = 0;
             let fertovi = 0;
-            if (pare > 100000) {
-                let kolicina = 3;
-                krtice = kolicina;
-                pare -= krtice * 10000;
-            }
+          
             if(svet.source.getAllNearbyTiles().filter(x=>x.owner == tileOwner.none).length == 0){
+                if (pare > 100000) {
+                    let kolicina = Math.floor(pare / 100000);
+                    krtice = kolicina;
+                    pare -= krtice * 10000;
+                }
                 let varr = Math.floor(pare / 3800);
                 brojtulipa += varr;
                 pare -= varr * 3800;

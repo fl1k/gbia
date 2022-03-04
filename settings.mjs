@@ -3,7 +3,7 @@ const settings = {
     AMOUNT_OF_GAMES: 10,
     RESTART_TURN: 99,
     RESTART: true,
-    PLAYER_NUM: 1,
+    PLAYER_NUM: 2,
     TEAM_NAME: "Miki Novi",
     RESTART_STRING: "restart",
 
