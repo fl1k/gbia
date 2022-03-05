@@ -1,2 +1,2 @@
 # gbia
-aibg 2.0 bot
+aibg 2.0 ns bot
